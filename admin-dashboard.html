@@ -1,0 +1,2338 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Admin Dashboard — Medhanealem Church Montreal</title>
+<link href="https://fonts.googleapis.com/css2?family=Cinzel:wght@400;500;600;700&family=EB+Garamond:ital,wght@0,400;0,500;0,600;1,400&family=JetBrains+Mono:wght@400;500&display=swap" rel="stylesheet">
+<style>
+:root {
+  --green:        #1B7A3E;
+  --green-dark:   #0F4A25;
+  --green-light:  #2DA05A;
+  --green-pale:   #E8F5EE;
+  --yellow:       #F5C400;
+  --yellow-light: #FFD740;
+  --yellow-pale:  #FFFBEA;
+  --red:          #C0392B;
+  --red-dark:     #922B21;
+  --red-pale:     #FDECEA;
+  --blue:         #1A6B9A;
+  --blue-pale:    #E8F4FD;
+  --ivory:        #FAFAF5;
+  --dark:         #0D1F13;
+  --sidebar-w:    240px;
+  --header-h:     60px;
+  --border:       1px solid #E2EAE5;
+  --shadow:       0 2px 12px rgba(13,31,19,0.08);
+  --shadow-lg:    0 8px 32px rgba(13,31,19,0.14);
+  --radius:       6px;
+  --font-body:    'EB Garamond', Georgia, serif;
+  --font-ui:      'Cinzel', serif;
+  --font-mono:    'JetBrains Mono', monospace;
+}
+
+* { margin:0; padding:0; box-sizing:border-box; }
+html { font-size:15px; }
+body { font-family:var(--font-body); background:#F0F4F1; color:#1A2E20; min-height:100vh; overflow-x:hidden; }
+
+/* ── LOGIN SCREEN ── */
+#login-screen {
+  min-height:100vh; display:flex; align-items:center; justify-content:center;
+  background:linear-gradient(135deg, var(--green-dark) 0%, #162B1C 50%, #0D1F13 100%);
+  position:relative; overflow:hidden;
+}
+#login-screen::before {
+  content:'✞';
+  position:absolute; font-size:50vw; color:rgba(245,196,0,0.03);
+  top:50%; left:50%; transform:translate(-50%,-50%);
+  pointer-events:none; font-family:var(--font-ui);
+}
+.login-card {
+  background:#fff; border-radius:8px; padding:48px 40px;
+  width:100%; max-width:420px; position:relative; z-index:1;
+  box-shadow:0 24px 80px rgba(0,0,0,0.4);
+  border-top:4px solid var(--yellow);
+}
+.login-flag { display:flex; height:4px; margin-bottom:28px; border-radius:2px; overflow:hidden; }
+.login-flag .sg { flex:1; background:var(--green); }
+.login-flag .sy { flex:1; background:var(--yellow); }
+.login-flag .sr { flex:1; background:var(--red); }
+.login-logo { text-align:center; margin-bottom:28px; }
+.login-logo .cross { font-size:2.2rem; color:var(--yellow); display:block; margin-bottom:8px; }
+.login-logo h1 { font-family:var(--font-ui); font-size:0.95rem; color:var(--green-dark); letter-spacing:0.12em; text-transform:uppercase; line-height:1.4; }
+.login-logo p { font-size:0.8rem; color:#888; margin-top:4px; letter-spacing:0.05em; }
+.login-field { margin-bottom:16px; }
+.login-field label { display:block; font-family:var(--font-ui); font-size:0.65rem; letter-spacing:0.12em; text-transform:uppercase; color:var(--green-dark); margin-bottom:5px; }
+.login-field input {
+  width:100%; padding:11px 14px; border:1px solid #D5E3DA;
+  border-radius:4px; font-family:var(--font-body); font-size:0.95rem;
+  outline:none; transition:border-color 0.2s, box-shadow 0.2s; background:#FAFCFB;
+}
+.login-field input:focus { border-color:var(--green); box-shadow:0 0 0 3px rgba(27,122,62,0.1); }
+.login-btn {
+  width:100%; padding:13px; background:var(--green);
+  color:#fff; border:none; border-radius:4px;
+  font-family:var(--font-ui); font-size:0.75rem; letter-spacing:0.12em;
+  text-transform:uppercase; cursor:pointer; transition:all 0.2s; margin-top:6px;
+}
+.login-btn:hover { background:var(--green-light); box-shadow:0 4px 16px rgba(27,122,62,0.35); }
+.login-hint { text-align:center; font-size:0.78rem; color:#aaa; margin-top:14px; font-style:italic; }
+
+/* ── APP SHELL ── */
+#app { display:none; min-height:100vh; }
+
+/* ── SIDEBAR ── */
+.sidebar {
+  position:fixed; left:0; top:0; bottom:0;
+  width:var(--sidebar-w);
+  background:var(--green-dark);
+  display:flex; flex-direction:column;
+  z-index:200; transition:transform 0.3s;
+  overflow-y:auto;
+}
+.sidebar-logo {
+  padding:20px 18px 16px;
+  border-bottom:1px solid rgba(245,196,0,0.15);
+  flex-shrink:0;
+}
+.sidebar-logo .flag-mini { display:flex; height:3px; margin-bottom:12px; border-radius:1px; overflow:hidden; }
+.sidebar-logo .flag-mini .sg{flex:1;background:var(--green-light);}
+.sidebar-logo .flag-mini .sy{flex:1;background:var(--yellow);}
+.sidebar-logo .flag-mini .sr{flex:1;background:var(--red);}
+.sidebar-logo h2 { font-family:var(--font-ui); font-size:0.72rem; color:var(--yellow); letter-spacing:0.15em; text-transform:uppercase; line-height:1.4; }
+.sidebar-logo p { font-size:0.7rem; color:rgba(255,255,255,0.4); margin-top:2px; font-style:italic; }
+
+.sidebar-section { padding:10px 0; border-bottom:1px solid rgba(255,255,255,0.06); }
+.sidebar-section-label { font-family:var(--font-ui); font-size:0.58rem; letter-spacing:0.18em; text-transform:uppercase; color:rgba(245,196,0,0.45); padding:6px 18px 4px; }
+.nav-item {
+  display:flex; align-items:center; gap:10px;
+  padding:9px 18px; cursor:pointer;
+  font-size:0.85rem; color:rgba(255,255,255,0.65);
+  transition:all 0.18s; border-left:3px solid transparent;
+  text-decoration:none;
+}
+.nav-item:hover { background:rgba(255,255,255,0.07); color:#fff; border-left-color:rgba(245,196,0,0.4); }
+.nav-item.active { background:rgba(245,196,0,0.1); color:var(--yellow); border-left-color:var(--yellow); }
+.nav-item .nav-icon { font-size:1rem; width:20px; text-align:center; flex-shrink:0; }
+.nav-badge { margin-left:auto; background:var(--red); color:#fff; font-size:0.6rem; padding:1px 6px; border-radius:10px; font-family:var(--font-mono); }
+
+.sidebar-footer {
+  margin-top:auto; padding:14px 18px;
+  border-top:1px solid rgba(255,255,255,0.07);
+  flex-shrink:0;
+}
+.admin-info { display:flex; align-items:center; gap:10px; }
+.admin-avatar { width:32px; height:32px; background:var(--yellow); border-radius:50%; display:flex; align-items:center; justify-content:center; font-family:var(--font-ui); font-size:0.75rem; color:var(--green-dark); font-weight:700; flex-shrink:0; }
+.admin-info div { flex:1; min-width:0; }
+.admin-info .name { font-size:0.8rem; color:#fff; white-space:nowrap; overflow:hidden; text-overflow:ellipsis; }
+.admin-info .role { font-size:0.68rem; color:rgba(255,255,255,0.4); font-family:var(--font-ui); letter-spacing:0.06em; }
+.logout-link { font-size:0.7rem; color:rgba(255,255,255,0.3); cursor:pointer; transition:color 0.2s; }
+.logout-link:hover { color:var(--red); }
+
+/* ── TOPBAR ── */
+.topbar {
+  position:fixed; left:var(--sidebar-w); right:0; top:0;
+  height:var(--header-h); background:#fff;
+  border-bottom:var(--border);
+  display:flex; align-items:center; justify-content:space-between;
+  padding:0 28px; z-index:100;
+  box-shadow:0 1px 4px rgba(13,31,19,0.06);
+}
+.topbar-left { display:flex; align-items:center; gap:14px; }
+.page-title { font-family:var(--font-ui); font-size:0.85rem; letter-spacing:0.1em; text-transform:uppercase; color:var(--green-dark); }
+.breadcrumb { font-size:0.78rem; color:#aaa; }
+.topbar-right { display:flex; align-items:center; gap:14px; }
+.topbar-btn {
+  background:none; border:1px solid #D5E3DA; padding:6px 14px;
+  border-radius:4px; font-family:var(--font-ui); font-size:0.65rem;
+  letter-spacing:0.1em; text-transform:uppercase; cursor:pointer;
+  color:var(--green-dark); transition:all 0.2s;
+}
+.topbar-btn:hover { background:var(--green-pale); border-color:var(--green); }
+.topbar-btn.primary { background:var(--green); color:#fff; border-color:var(--green); }
+.topbar-btn.primary:hover { background:var(--green-light); }
+.notif-bell { position:relative; cursor:pointer; font-size:1.1rem; padding:4px; }
+.notif-dot { position:absolute; top:2px; right:2px; width:8px; height:8px; background:var(--red); border-radius:50%; border:2px solid #fff; }
+
+/* ── MAIN CONTENT ── */
+.main-content {
+  margin-left:var(--sidebar-w);
+  margin-top:var(--header-h);
+  padding:28px;
+  min-height:calc(100vh - var(--header-h));
+}
+
+/* ── PAGE SECTIONS ── */
+.page { display:none; animation:fadeIn 0.35s ease; }
+.page.active { display:block; }
+@keyframes fadeIn { from{opacity:0;transform:translateY(8px)} to{opacity:1;transform:translateY(0)} }
+
+/* ── STAT CARDS ── */
+.stat-grid { display:grid; grid-template-columns:repeat(auto-fill,minmax(200px,1fr)); gap:18px; margin-bottom:28px; }
+.stat-card {
+  background:#fff; border-radius:var(--radius); padding:20px 22px;
+  border:var(--border); box-shadow:var(--shadow);
+  display:flex; flex-direction:column; gap:8px;
+  border-left:4px solid var(--green);
+  transition:transform 0.2s, box-shadow 0.2s;
+}
+.stat-card:hover { transform:translateY(-2px); box-shadow:var(--shadow-lg); }
+.stat-card.yellow { border-left-color:var(--yellow); }
+.stat-card.red    { border-left-color:var(--red); }
+.stat-card.blue   { border-left-color:var(--blue); }
+.stat-label { font-family:var(--font-ui); font-size:0.62rem; letter-spacing:0.14em; text-transform:uppercase; color:#888; }
+.stat-value { font-family:var(--font-ui); font-size:1.9rem; color:var(--green-dark); line-height:1; }
+.stat-card.yellow .stat-value { color:#B8860B; }
+.stat-card.red    .stat-value { color:var(--red-dark); }
+.stat-card.blue   .stat-value { color:var(--blue); }
+.stat-sub { font-size:0.78rem; color:#aaa; }
+.stat-icon { font-size:1.6rem; align-self:flex-end; margin-top:-8px; opacity:0.6; }
+
+/* ── SECTION CARD ── */
+.card {
+  background:#fff; border-radius:var(--radius); border:var(--border);
+  box-shadow:var(--shadow); margin-bottom:22px; overflow:hidden;
+}
+.card-header {
+  padding:14px 20px; border-bottom:var(--border);
+  display:flex; justify-content:space-between; align-items:center;
+  background:#FAFCFB;
+}
+.card-header h3 { font-family:var(--font-ui); font-size:0.75rem; letter-spacing:0.12em; text-transform:uppercase; color:var(--green-dark); }
+.card-body { padding:20px; }
+
+/* ── TABLE ── */
+.data-table { width:100%; border-collapse:collapse; font-size:0.88rem; }
+.data-table th { font-family:var(--font-ui); font-size:0.62rem; letter-spacing:0.12em; text-transform:uppercase; color:#888; padding:10px 14px; border-bottom:2px solid #EEF3F0; text-align:left; white-space:nowrap; }
+.data-table td { padding:11px 14px; border-bottom:1px solid #F0F4F1; vertical-align:middle; }
+.data-table tr:last-child td { border-bottom:none; }
+.data-table tr:hover td { background:#FAFCFB; }
+.data-table .mono { font-family:var(--font-mono); font-size:0.78rem; }
+
+/* ── BADGES ── */
+.badge { display:inline-block; padding:2px 10px; border-radius:20px; font-size:0.7rem; font-family:var(--font-ui); letter-spacing:0.05em; white-space:nowrap; }
+.badge-green  { background:var(--green-pale); color:var(--green); border:1px solid rgba(27,122,62,0.2); }
+.badge-yellow { background:var(--yellow-pale); color:#B8860B; border:1px solid rgba(245,196,0,0.3); }
+.badge-red    { background:var(--red-pale); color:var(--red-dark); border:1px solid rgba(192,57,43,0.2); }
+.badge-blue   { background:var(--blue-pale); color:var(--blue); border:1px solid rgba(26,107,154,0.2); }
+.badge-grey   { background:#F3F4F6; color:#666; border:1px solid #E5E7EB; }
+
+/* ── ACTION BUTTONS ── */
+.action-btns { display:flex; gap:6px; }
+.btn-icon { background:none; border:1px solid #D5E3DA; padding:4px 10px; border-radius:4px; cursor:pointer; font-size:0.78rem; transition:all 0.18s; color:#555; }
+.btn-icon:hover { background:var(--green-pale); border-color:var(--green); color:var(--green); }
+.btn-icon.danger:hover { background:var(--red-pale); border-color:var(--red); color:var(--red); }
+.btn-icon.approve:hover { background:var(--green-pale); border-color:var(--green); color:var(--green); }
+
+/* ── FORMS ── */
+.form-grid { display:grid; grid-template-columns:1fr 1fr; gap:16px; }
+.form-grid.full { grid-template-columns:1fr; }
+.form-field { display:flex; flex-direction:column; gap:5px; }
+.form-field label { font-family:var(--font-ui); font-size:0.62rem; letter-spacing:0.12em; text-transform:uppercase; color:#666; }
+.form-field input, .form-field select, .form-field textarea {
+  padding:9px 12px; border:1px solid #D5E3DA; border-radius:4px;
+  font-family:var(--font-body); font-size:0.9rem; outline:none;
+  transition:border-color 0.2s; background:#FAFCFB;
+}
+.form-field input:focus, .form-field select:focus, .form-field textarea:focus { border-color:var(--green); box-shadow:0 0 0 3px rgba(27,122,62,0.08); }
+.form-field textarea { resize:vertical; min-height:90px; }
+.form-actions { display:flex; gap:10px; margin-top:6px; }
+.btn-save { background:var(--green); color:#fff; border:none; padding:10px 24px; border-radius:4px; font-family:var(--font-ui); font-size:0.7rem; letter-spacing:0.1em; text-transform:uppercase; cursor:pointer; transition:all 0.2s; }
+.btn-save:hover { background:var(--green-light); }
+.btn-cancel { background:none; color:#888; border:1px solid #D5E3DA; padding:10px 20px; border-radius:4px; font-family:var(--font-ui); font-size:0.7rem; letter-spacing:0.1em; text-transform:uppercase; cursor:pointer; transition:all 0.2s; }
+.btn-cancel:hover { background:#F3F4F6; }
+
+/* ── SEARCH BAR ── */
+.search-bar { display:flex; gap:10px; margin-bottom:16px; align-items:center; flex-wrap:wrap; }
+.search-input { flex:1; min-width:180px; padding:8px 13px; border:1px solid #D5E3DA; border-radius:4px; font-family:var(--font-body); font-size:0.9rem; outline:none; transition:border-color 0.2s; background:#FAFCFB; }
+.search-input:focus { border-color:var(--green); }
+.filter-select { padding:8px 12px; border:1px solid #D5E3DA; border-radius:4px; font-family:var(--font-body); font-size:0.85rem; outline:none; background:#FAFCFB; color:#333; cursor:pointer; }
+
+/* ── CHARTS PLACEHOLDER ── */
+.chart-placeholder {
+  background:linear-gradient(135deg, var(--green-pale), #fff);
+  border:1px dashed rgba(27,122,62,0.25);
+  border-radius:4px; padding:32px; text-align:center;
+  display:flex; flex-direction:column; align-items:center; gap:8px;
+}
+.chart-placeholder .chart-icon { font-size:2.5rem; opacity:0.4; }
+.chart-placeholder p { font-size:0.85rem; color:#aaa; font-style:italic; }
+
+/* ── ACTIVITY FEED ── */
+.activity-list { display:flex; flex-direction:column; gap:0; }
+.activity-item { display:flex; gap:14px; padding:12px 0; border-bottom:1px solid #F0F4F1; align-items:flex-start; }
+.activity-item:last-child { border-bottom:none; }
+.activity-dot { width:8px; height:8px; border-radius:50%; flex-shrink:0; margin-top:6px; }
+.activity-dot.green  { background:var(--green); }
+.activity-dot.yellow { background:var(--yellow); }
+.activity-dot.red    { background:var(--red); }
+.activity-dot.blue   { background:var(--blue); }
+.activity-text { flex:1; font-size:0.87rem; line-height:1.5; }
+.activity-text strong { color:var(--green-dark); }
+.activity-time { font-size:0.72rem; color:#bbb; font-family:var(--font-mono); white-space:nowrap; margin-top:2px; }
+
+/* ── LIVE STREAM CONTROL ── */
+.stream-control {
+  background:linear-gradient(135deg, var(--green-dark), #1a3020);
+  border-radius:var(--radius); padding:28px; color:#fff; margin-bottom:22px;
+  display:flex; justify-content:space-between; align-items:center; flex-wrap:wrap; gap:18px;
+  border:1px solid rgba(245,196,0,0.2);
+}
+.stream-info h3 { font-family:var(--font-ui); font-size:0.9rem; letter-spacing:0.12em; text-transform:uppercase; color:var(--yellow); margin-bottom:6px; }
+.stream-info p { font-size:0.87rem; color:rgba(255,255,255,0.65); }
+.stream-status { display:flex; align-items:center; gap:8px; margin-top:10px; }
+.stream-dot-off { width:9px; height:9px; background:#555; border-radius:50%; }
+.stream-dot-on  { width:9px; height:9px; background:#ff4444; border-radius:50%; animation:pulse 1.4s infinite; }
+.stream-status span { font-size:0.8rem; font-family:var(--font-mono); }
+.stream-actions { display:flex; gap:10px; flex-wrap:wrap; }
+.btn-golive { background:var(--red); color:#fff; border:none; padding:12px 28px; border-radius:4px; font-family:var(--font-ui); font-size:0.75rem; letter-spacing:0.12em; text-transform:uppercase; cursor:pointer; transition:all 0.2s; display:flex; align-items:center; gap:8px; }
+.btn-golive:hover { background:#e04030; box-shadow:0 4px 16px rgba(192,57,43,0.4); }
+.btn-golive.stop { background:#555; }
+.btn-golive.stop:hover { background:#444; }
+.btn-outline-white { background:none; color:rgba(255,255,255,0.7); border:1px solid rgba(255,255,255,0.25); padding:12px 22px; border-radius:4px; font-family:var(--font-ui); font-size:0.72rem; letter-spacing:0.1em; text-transform:uppercase; cursor:pointer; transition:all 0.2s; }
+.btn-outline-white:hover { border-color:rgba(255,255,255,0.6); color:#fff; }
+
+/* ── MODAL ── */
+.modal-overlay { display:none; position:fixed; inset:0; background:rgba(0,0,0,0.5); z-index:500; align-items:center; justify-content:center; padding:20px; }
+.modal-overlay.open { display:flex; }
+.modal { background:#fff; border-radius:8px; width:100%; max-width:560px; box-shadow:0 24px 60px rgba(0,0,0,0.25); overflow:hidden; }
+.modal-header { padding:16px 22px; border-bottom:var(--border); display:flex; justify-content:space-between; align-items:center; background:#FAFCFB; }
+.modal-header h3 { font-family:var(--font-ui); font-size:0.78rem; letter-spacing:0.12em; text-transform:uppercase; color:var(--green-dark); }
+.modal-close { background:none; border:none; font-size:1.3rem; cursor:pointer; color:#aaa; line-height:1; padding:2px 6px; }
+.modal-close:hover { color:var(--red); }
+.modal-body { padding:22px; }
+.modal-footer { padding:14px 22px; border-top:var(--border); display:flex; justify-content:flex-end; gap:10px; background:#FAFCFB; }
+
+/* ── TOAST ── */
+.toast-container { position:fixed; bottom:24px; right:24px; z-index:1000; display:flex; flex-direction:column; gap:8px; }
+.toast { background:var(--green-dark); color:#fff; padding:12px 18px; border-radius:4px; font-size:0.85rem; box-shadow:0 4px 16px rgba(0,0,0,0.2); transform:translateX(120px); opacity:0; transition:all 0.35s; display:flex; align-items:center; gap:10px; border-left:3px solid var(--yellow); max-width:320px; }
+.toast.show { transform:translateX(0); opacity:1; }
+.toast.error { background:var(--red-dark); border-left-color:var(--red); }
+
+/* ── PRAYER REQUEST CARD ── */
+.prayer-req-card { background:#FAFCFB; border:1px solid #E2EAE5; border-left:3px solid var(--green); border-radius:4px; padding:14px 16px; margin-bottom:10px; }
+.prayer-req-card.urgent { border-left-color:var(--red); }
+.prayer-req-card h4 { font-family:var(--font-ui); font-size:0.72rem; letter-spacing:0.08em; text-transform:uppercase; color:var(--green-dark); margin-bottom:5px; }
+.prayer-req-card p { font-size:0.88rem; color:#444; line-height:1.6; font-style:italic; margin-bottom:8px; }
+.prayer-req-card .meta { display:flex; gap:14px; align-items:center; flex-wrap:wrap; }
+.prayer-req-card .meta span { font-size:0.72rem; color:#999; font-family:var(--font-mono); }
+
+/* ── GRID LAYOUTS ── */
+.two-col { display:grid; grid-template-columns:1fr 1fr; gap:22px; }
+.three-col { display:grid; grid-template-columns:2fr 1fr; gap:22px; }
+@media(max-width:900px){.two-col,.three-col{grid-template-columns:1fr}}
+
+/* ── TABS ── */
+.tabs { display:flex; border-bottom:2px solid #EEF3F0; margin-bottom:20px; gap:0; }
+.tab-btn { padding:10px 18px; background:none; border:none; font-family:var(--font-ui); font-size:0.68rem; letter-spacing:0.1em; text-transform:uppercase; cursor:pointer; color:#888; border-bottom:2px solid transparent; margin-bottom:-2px; transition:all 0.2s; }
+.tab-btn:hover { color:var(--green); }
+.tab-btn.active { color:var(--green); border-bottom-color:var(--green); }
+.tab-panel { display:none; }
+.tab-panel.active { display:block; }
+
+/* ── MEDIA UPLOADER ── */
+.upload-zone { border:2px dashed #C5D8CB; border-radius:6px; padding:36px; text-align:center; cursor:pointer; transition:all 0.2s; background:#FAFCFB; }
+.upload-zone:hover { border-color:var(--green); background:var(--green-pale); }
+.upload-zone .upload-icon { font-size:2.5rem; display:block; margin-bottom:10px; opacity:0.5; }
+.upload-zone p { font-size:0.88rem; color:#aaa; }
+.upload-zone strong { color:var(--green); }
+
+/* ── DONATION ROW ── */
+.donation-amount { font-family:var(--font-mono); font-size:0.9rem; font-weight:500; color:var(--green); }
+
+/* ── MOBILE ── */
+@media(max-width:768px){
+  .sidebar { transform:translateX(-100%); }
+  .sidebar.open { transform:translateX(0); }
+  .topbar { left:0; }
+  .main-content { margin-left:0; padding:18px; }
+  .stat-grid { grid-template-columns:1fr 1fr; }
+  .form-grid { grid-template-columns:1fr; }
+  .hamburger { display:flex; }
+}
+.hamburger { display:none; flex-direction:column; gap:5px; cursor:pointer; padding:6px; }
+.hamburger span { width:22px; height:2px; background:var(--green-dark); border-radius:1px; }
+
+/* ── FINANCE EXTRAS ── */
+.report-print { display:none; }
+@media print {
+  .sidebar,.topbar,.report-print-hide { display:none!important; }
+  .main-content { margin:0!important; padding:0!important; }
+  .report-print { display:block; }
+}
+.contrib-row-paid td { background:rgba(27,122,62,0.04); }
+.contrib-row-unpaid td { background:rgba(192,57,43,0.04); }
+.income-source-bar { display:flex; align-items:center; gap:10px; margin-bottom:8px; }
+.income-source-bar .bar-fill { height:10px; border-radius:5px; transition:width 0.8s ease; }
+.bar-wrap { flex:1; background:#EEF3F0; height:10px; border-radius:5px; overflow:hidden; }
+.fin-divider { font-family:var(--font-ui); font-size:0.7rem; letter-spacing:0.14em; text-transform:uppercase; color:var(--green-dark); padding-bottom:7px; border-bottom:2px solid var(--green); margin-bottom:14px; }
+.fin-divider.red { color:var(--red-dark); border-bottom-color:var(--red); }
+.report-row-total td { background:#FAFCFB; font-weight:700; border-top:2px solid #EEF3F0; }
+.purple { color:#6D28D9; }
+.badge-purple { background:#F5F3FF; color:#6D28D9; border:1px solid rgba(109,40,217,0.25); }
+
+/* ══ FIREBASE SETUP BANNER ══ */
+#firebase-banner {
+  display: none;
+  position: fixed;
+  bottom: 0; left: 0; right: 0;
+  background: #1a2e20;
+  border-top: 3px solid #F5C400;
+  color: #fff;
+  padding: 12px 22px;
+  z-index: 9999;
+  align-items: center;
+  justify-content: space-between;
+  flex-wrap: wrap;
+  gap: 10px;
+  font-family: 'Courier New', monospace;
+  font-size: 0.78rem;
+  line-height: 1.6;
+}
+#firebase-banner strong { color: #F5C400; }
+#firebase-banner code { background: rgba(245,196,0,0.12); padding: 2px 6px; border-radius: 3px; color: #90EE90; }
+#firebase-banner .fb-close { background: none; border: 1px solid rgba(255,255,255,0.3); color: #fff; padding: 5px 12px; border-radius: 4px; cursor: pointer; font-size: 0.75rem; }
+#firebase-banner .fb-close:hover { background: rgba(255,255,255,0.1); }
+
+</style>
+</head>
+<body>
+<div id="firebase-banner">
+  <div>
+    <strong>⚠ Firebase not active</strong> — app runs on local demo data. &nbsp;
+    To enable live database: &nbsp;
+    <strong>Step 1</strong> paste your config values &nbsp;·&nbsp;
+    <strong>Step 2</strong> serve via HTTP: <code>npx serve .</code> &nbsp;·&nbsp;
+    <strong>Step 3</strong> open <code>localhost:3000</code>
+  </div>
+  <button class="fb-close" onclick="document.getElementById('firebase-banner').style.display='none'">✕ Dismiss</button>
+</div>
+
+
+<div id="firebase-banner">
+  <div>
+    <strong>⚠ Firebase not active</strong> — app runs on local demo data. &nbsp;
+    To enable live database: &nbsp;
+    <strong>Step 1</strong> paste your config values &nbsp;·&nbsp;
+    <strong>Step 2</strong> serve via HTTP: <code>npx serve .</code> &nbsp;·&nbsp;
+    <strong>Step 3</strong> open <code>localhost:3000</code>
+  </div>
+  <button class="fb-close" onclick="document.getElementById('firebase-banner').style.display='none'">✕ Dismiss</button>
+</div>
+
+<!-- ══════════ LOGIN ══════════ -->
+<div id="login-screen">
+  <div class="login-card">
+    <div class="login-flag"><div class="sg"></div><div class="sy"></div><div class="sr"></div></div>
+    <div class="login-logo">
+      <span class="cross">✞</span>
+      <h1>Medhanealem Church<br>Admin Portal</h1>
+      <p>Montréal · Panneau d'Administration</p>
+    </div>
+    <div class="login-field">
+      <label>Email Address</label>
+      <input type="email" id="admin-email" placeholder="admin@medhanealemmontreal.ca" value="admin@medhanealemmontreal.ca">
+    </div>
+    <div class="login-field">
+      <label>Password</label>
+      <input type="password" id="admin-pass" placeholder="••••••••" value="admin123">
+    </div>
+    <button class="login-btn" onclick="doAdminLogin()">Sign In to Dashboard</button>
+    <p class="login-hint">Demo: use any credentials above &amp; click Sign In</p>
+  </div>
+</div>
+
+<!-- ══════════ APP ══════════ -->
+<div id="app">
+
+  <!-- SIDEBAR -->
+  <aside class="sidebar" id="sidebar">
+    <div class="sidebar-logo">
+      <div class="flag-mini"><div class="sg"></div><div class="sy"></div><div class="sr"></div></div>
+      <h2>Medhanealem<br>Admin</h2>
+      <p>መድኃኔዓለም ቤተ-ክርስቲያን</p>
+    </div>
+
+    <div class="sidebar-section">
+      <div class="sidebar-section-label">Overview</div>
+      <div class="nav-item active" onclick="showPage('dashboard',this)"><span class="nav-icon">📊</span> Dashboard</div>
+    </div>
+
+    <div class="sidebar-section">
+      <div class="sidebar-section-label">Community</div>
+      <div class="nav-item" onclick="showPage('members',this)"><span class="nav-icon">👥</span> Members <span class="nav-badge" id="badge-members">3</span></div>
+      <div class="nav-item" onclick="showPage('prayer',this)"><span class="nav-icon">🙏</span> Prayer Requests <span class="nav-badge" id="badge-prayer">5</span></div>
+      <div class="nav-item" onclick="showPage('contact',this)"><span class="nav-icon">✉️</span> Messages <span class="nav-badge" id="badge-contact">2</span></div>
+    </div>
+
+    <div class="sidebar-section">
+      <div class="sidebar-section-label">Content</div>
+      <div class="nav-item" onclick="showPage('events',this)"><span class="nav-icon">📅</span> Events</div>
+      <div class="nav-item" onclick="showPage('sermons',this)"><span class="nav-icon">🎙️</span> Sermons</div>
+      <div class="nav-item" onclick="showPage('gallery',this)"><span class="nav-icon">🖼️</span> Gallery</div>
+      <div class="nav-item" onclick="showPage('announcements',this)"><span class="nav-icon">📢</span> Announcements</div>
+      <div class="nav-item" onclick="showPage('minutes',this);renderMinutes();"><span class="nav-icon">📋</span> ቃለ ጉባዔ — Minutes</div>
+    </div>
+
+    <div class="sidebar-section">
+      <div class="sidebar-section-label">Finance &amp; Live</div>
+      <div class="nav-item" onclick="showPage('finance',this)"><span class="nav-icon">📈</span> Financial Overview</div>
+      <div class="nav-item" onclick="showPage('contributions',this)"><span class="nav-icon">👥</span> Member Contributions</div>
+      <div class="nav-item" onclick="showPage('mudaye',this)"><span class="nav-icon">🕊️</span> ሙዳየ ምጽዋት</div>
+      <div class="nav-item" onclick="showPage('donations',this)"><span class="nav-icon">💰</span> Online Donations</div>
+      <div class="nav-item" onclick="showPage('report',this)"><span class="nav-icon">📊</span> Monthly Report</div>
+      <div class="nav-item" onclick="showPage('livestream',this)"><span class="nav-icon">📡</span> Live Stream</div>
+    </div>
+
+    <div class="sidebar-section">
+      <div class="sidebar-section-label">System</div>
+      <div class="nav-item" onclick="showPage('settings',this)"><span class="nav-icon">⚙️</span> Settings</div>
+    </div>
+
+    <div class="sidebar-footer">
+      <div class="admin-info">
+        <div class="admin-avatar" id="admin-av">A</div>
+        <div>
+          <div class="name" id="admin-name-display">Admin</div>
+          <div class="role">Super Admin</div>
+        </div>
+      </div>
+      <div class="logout-link" onclick="doLogout()" style="margin-top:10px;display:block;">⎋ Sign Out</div>
+    </div>
+  </aside>
+
+  <!-- TOPBAR -->
+  <header class="topbar">
+    <div class="topbar-left">
+      <div class="hamburger" onclick="toggleSidebar()"><span></span><span></span><span></span></div>
+      <div>
+        <div class="page-title" id="topbar-title">Dashboard</div>
+        <div class="breadcrumb">Medhanealem Church · Admin</div>
+      </div>
+    </div>
+    <div class="topbar-right">
+      <button class="topbar-btn" onclick="window.open('church-website.html','_blank')">🌐 View Website</button>
+      <div class="notif-bell" onclick="showToast('5 new notifications','📬')">🔔<div class="notif-dot"></div></div>
+    </div>
+  </header>
+
+  <!-- MAIN -->
+  <main class="main-content">
+
+    <!-- ═══ DASHBOARD ═══ -->
+    <div id="page-dashboard" class="page active">
+      <div class="stat-grid">
+        <div class="stat-card"><div class="stat-label">Total Members</div><div class="stat-value">142</div><div class="stat-sub">+8 this month</div><div class="stat-icon">👥</div></div>
+        <div class="stat-card yellow"><div class="stat-label">Pending Approvals</div><div class="stat-value">3</div><div class="stat-sub">Live portal requests</div><div class="stat-icon">⏳</div></div>
+        <div class="stat-card red"><div class="stat-label">Prayer Requests</div><div class="stat-value">5</div><div class="stat-sub">Awaiting response</div><div class="stat-icon">🙏</div></div>
+        <div class="stat-card blue"><div class="stat-label">Donations (Mar)</div><div class="stat-value">$840</div><div class="stat-sub">12 transactions</div><div class="stat-icon">💰</div></div>
+        <div class="stat-card"><div class="stat-label">Upcoming Events</div><div class="stat-value">4</div><div class="stat-sub">Next: Fasika Apr 15</div><div class="stat-icon">📅</div></div>
+        <div class="stat-card yellow"><div class="stat-label">Sermons Uploaded</div><div class="stat-value">28</div><div class="stat-sub">5 pending upload</div><div class="stat-icon">🎙️</div></div>
+      </div>
+
+      <div class="three-col">
+        <div>
+          <!-- Activity Feed -->
+          <div class="card">
+            <div class="card-header">
+              <h3>Recent Activity</h3>
+              <button class="topbar-btn">View All</button>
+            </div>
+            <div class="card-body">
+              <div class="activity-list">
+                <div class="activity-item"><div class="activity-dot green"></div><div class="activity-text"><strong>Yohannes K.</strong> registered for Live Kidase portal<div class="activity-time">2 min ago</div></div></div>
+                <div class="activity-item"><div class="activity-dot yellow"></div><div class="activity-text">New prayer request from <strong>Anonymous</strong><div class="activity-time">18 min ago</div></div></div>
+                <div class="activity-item"><div class="activity-dot blue"></div><div class="activity-text">Donation of <strong>$50 CAD</strong> received from Marie T.<div class="activity-time">1 hr ago</div></div></div>
+                <div class="activity-item"><div class="activity-dot green"></div><div class="activity-text">Sermon "<strong>Timkat Teaching</strong>" uploaded successfully<div class="activity-time">3 hrs ago</div></div></div>
+                <div class="activity-item"><div class="activity-dot red"></div><div class="activity-text">Contact message from <strong>Sophie M.</strong> — Marriage inquiry<div class="activity-time">5 hrs ago</div></div></div>
+                <div class="activity-item"><div class="activity-dot yellow"></div><div class="activity-text">Event "<strong>Fasika 2025</strong>" published to website<div class="activity-time">Yesterday</div></div></div>
+                <div class="activity-item"><div class="activity-dot blue"></div><div class="activity-text">Donation of <strong>$100 CAD</strong> received from Dawit A.<div class="activity-time">Yesterday</div></div></div>
+              </div>
+            </div>
+          </div>
+
+          <!-- Donations Chart -->
+          <div class="card">
+            <div class="card-header"><h3>Donations Overview — 2025</h3></div>
+            <div class="card-body">
+              <div style="display:flex;gap:8px;margin-bottom:12px;flex-wrap:wrap;">
+                <div style="flex:1;min-width:100px;background:var(--green-pale);border:1px solid rgba(27,122,62,0.2);border-radius:4px;padding:12px;text-align:center;">
+                  <div style="font-family:var(--font-ui);font-size:0.6rem;letter-spacing:0.1em;text-transform:uppercase;color:#888;margin-bottom:4px;">This Month</div>
+                  <div style="font-family:var(--font-ui);font-size:1.4rem;color:var(--green);">$840</div>
+                </div>
+                <div style="flex:1;min-width:100px;background:var(--yellow-pale);border:1px solid rgba(245,196,0,0.3);border-radius:4px;padding:12px;text-align:center;">
+                  <div style="font-family:var(--font-ui);font-size:0.6rem;letter-spacing:0.1em;text-transform:uppercase;color:#888;margin-bottom:4px;">YTD Total</div>
+                  <div style="font-family:var(--font-ui);font-size:1.4rem;color:#B8860B;">$2,340</div>
+                </div>
+                <div style="flex:1;min-width:100px;background:var(--blue-pale);border:1px solid rgba(26,107,154,0.2);border-radius:4px;padding:12px;text-align:center;">
+                  <div style="font-family:var(--font-ui);font-size:0.6rem;letter-spacing:0.1em;text-transform:uppercase;color:#888;margin-bottom:4px;">Goal</div>
+                  <div style="font-family:var(--font-ui);font-size:1.4rem;color:var(--blue);">$10,000</div>
+                </div>
+              </div>
+              <div style="background:#EEF3F0;border-radius:4px;height:10px;overflow:hidden;">
+                <div style="width:23.4%;height:100%;background:linear-gradient(90deg,var(--green),var(--green-light));border-radius:4px;"></div>
+              </div>
+              <div style="font-size:0.75rem;color:#aaa;margin-top:5px;text-align:right;">23.4% of annual goal</div>
+            </div>
+          </div>
+        </div>
+
+        <!-- Right sidebar -->
+        <div>
+          <!-- Pending Approvals -->
+          <div class="card">
+            <div class="card-header"><h3>Pending Approvals</h3><span class="badge badge-yellow">3</span></div>
+            <div class="card-body" style="padding:14px;">
+              <div style="display:flex;flex-direction:column;gap:10px;">
+                <div style="padding:12px;background:#FAFCFB;border:1px solid #E2EAE5;border-radius:4px;">
+                  <div style="font-size:0.88rem;font-weight:600;color:var(--green-dark);">Yohannes K.</div>
+                  <div style="font-size:0.75rem;color:#888;margin:2px 0 8px;">Live Kidase Portal · 2 min ago</div>
+                  <div class="action-btns">
+                    <button class="btn-icon approve" onclick="approveUser('Yohannes K.')">✓ Approve</button>
+                    <button class="btn-icon danger" onclick="showToast('User declined','❌')">✕ Decline</button>
+                  </div>
+                </div>
+                <div style="padding:12px;background:#FAFCFB;border:1px solid #E2EAE5;border-radius:4px;">
+                  <div style="font-size:0.88rem;font-weight:600;color:var(--green-dark);">Almaz G.</div>
+                  <div style="font-size:0.75rem;color:#888;margin:2px 0 8px;">Live Kidase Portal · 1 hr ago</div>
+                  <div class="action-btns">
+                    <button class="btn-icon approve" onclick="approveUser('Almaz G.')">✓ Approve</button>
+                    <button class="btn-icon danger" onclick="showToast('User declined','❌')">✕ Decline</button>
+                  </div>
+                </div>
+                <div style="padding:12px;background:#FAFCFB;border:1px solid #E2EAE5;border-radius:4px;">
+                  <div style="font-size:0.88rem;font-weight:600;color:var(--green-dark);">Tigist W.</div>
+                  <div style="font-size:0.75rem;color:#888;margin:2px 0 8px;">Live Kidase Portal · 3 hrs ago</div>
+                  <div class="action-btns">
+                    <button class="btn-icon approve" onclick="approveUser('Tigist W.')">✓ Approve</button>
+                    <button class="btn-icon danger" onclick="showToast('User declined','❌')">✕ Decline</button>
+                  </div>
+                </div>
+              </div>
+            </div>
+          </div>
+
+          <!-- Upcoming Events -->
+          <div class="card">
+            <div class="card-header"><h3>Upcoming Events</h3></div>
+            <div class="card-body" style="padding:14px;">
+              <div style="display:flex;flex-direction:column;gap:8px;">
+                <div style="display:flex;gap:12px;align-items:center;padding:8px 0;border-bottom:1px solid #F0F4F1;">
+                  <div style="background:var(--red);color:#fff;border-radius:4px;padding:4px 8px;text-align:center;min-width:40px;"><div style="font-family:var(--font-ui);font-size:1rem;line-height:1;">15</div><div style="font-size:0.6rem;letter-spacing:0.05em;">APR</div></div>
+                  <div><div style="font-size:0.88rem;color:var(--green-dark);font-weight:500;">Fasika — ፋሲካ</div><div style="font-size:0.75rem;color:#888;">Ethiopian Easter</div></div>
+                </div>
+                <div style="display:flex;gap:12px;align-items:center;padding:8px 0;border-bottom:1px solid #F0F4F1;">
+                  <div style="background:var(--green);color:#fff;border-radius:4px;padding:4px 8px;text-align:center;min-width:40px;"><div style="font-family:var(--font-ui);font-size:1rem;line-height:1;">28</div><div style="font-size:0.6rem;letter-spacing:0.05em;">MAR</div></div>
+                  <div><div style="font-size:0.88rem;color:var(--green-dark);font-weight:500;">Community Fundraiser</div><div style="font-size:0.75rem;color:#888;">Annual gathering</div></div>
+                </div>
+                <div style="display:flex;gap:12px;align-items:center;padding:8px 0;">
+                  <div style="background:var(--yellow);color:#fff;border-radius:4px;padding:4px 8px;text-align:center;min-width:40px;"><div style="font-family:var(--font-ui);font-size:1rem;line-height:1;">TBA</div><div style="font-size:0.6rem;letter-spacing:0.05em;">JUN</div></div>
+                  <div><div style="font-size:0.88rem;color:var(--green-dark);font-weight:500;">Youth Summer Camp</div><div style="font-size:0.75rem;color:#888;">Date TBC</div></div>
+                </div>
+              </div>
+            </div>
+          </div>
+        </div>
+      </div>
+    </div>
+
+    <!-- ═══ MEMBERS ═══ -->
+    <div id="page-members" class="page">
+      <div class="card">
+        <div class="card-header">
+          <h3>Church Members</h3>
+          <button class="topbar-btn primary" onclick="openModal('modal-add-member')">+ Add Member</button>
+        </div>
+        <div class="card-body">
+          <div class="tabs">
+            <button class="tab-btn active" onclick="switchTab('members','all',this)">All Members (142)</button>
+            <button class="tab-btn" onclick="switchTab('members','pending',this)">Pending Approval (3)</button>
+            <button class="tab-btn" onclick="switchTab('members','live',this)">Live Portal Access</button>
+          </div>
+          <div class="search-bar">
+            <input class="search-input" type="text" placeholder="Search by name, email, phone...">
+            <select class="filter-select"><option>All Status</option><option>Active</option><option>Pending</option><option>Suspended</option></select>
+            <select class="filter-select"><option>All Roles</option><option>Member</option><option>Deacon</option><option>Priest</option><option>Admin</option></select>
+          </div>
+          <div style="overflow-x:auto;">
+            <table class="data-table">
+              <thead><tr><th>Name</th><th>Email</th><th>Phone</th><th>Joined</th><th>Status</th><th>Live Access</th><th>Actions</th></tr></thead>
+              <tbody>
+                <tr><td><strong>Marie Tekeste</strong></td><td class="mono"><a href="/cdn-cgi/l/email-protection" class="__cf_email__" data-cfemail="076a66756e62297347606a666e6b2964686a">[email&#160;protected]</a></td><td class="mono">(514) 555-0101</td><td>Jan 2023</td><td><span class="badge badge-green">Active</span></td><td><span class="badge badge-green">✓ Approved</span></td><td><div class="action-btns"><button class="btn-icon" onclick="showToast('Editing Marie Tekeste','✏️')">Edit</button><button class="btn-icon danger" onclick="showToast('Member suspended','⚠️')">Suspend</button></div></td></tr>
+                <tr><td><strong>Yohannes Kebede</strong></td><td class="mono"><a href="/cdn-cgi/l/email-protection" class="__cf_email__" data-cfemail="dea7b1b6bfb0b0bbadf0b59eb3bfb7b2f0bdb1b3">[email&#160;protected]</a></td><td class="mono">(514) 555-0202</td><td>Mar 2025</td><td><span class="badge badge-yellow">Pending</span></td><td><span class="badge badge-yellow">⏳ Pending</span></td><td><div class="action-btns"><button class="btn-icon approve" onclick="approveUser('Yohannes K.')">Approve</button><button class="btn-icon danger" onclick="showToast('Declined','❌')">Decline</button></div></td></tr>
+                <tr><td><strong>Dawit Alemu</strong></td><td class="mono"><a href="/cdn-cgi/l/email-protection" class="__cf_email__" data-cfemail="630702140a174d02230b0c170e020a0f4d000c0e">[email&#160;protected]</a></td><td class="mono">(514) 555-0303</td><td>Jun 2022</td><td><span class="badge badge-green">Active</span></td><td><span class="badge badge-green">✓ Approved</span></td><td><div class="action-btns"><button class="btn-icon" onclick="showToast('Editing Dawit Alemu','✏️')">Edit</button><button class="btn-icon danger" onclick="showToast('Member suspended','⚠️')">Suspend</button></div></td></tr>
+                <tr><td><strong>Almaz Girma</strong></td><td class="mono"><a href="/cdn-cgi/l/email-protection" class="__cf_email__" data-cfemail="f7969b9a968dd990b7909a969e9bd994989a">[email&#160;protected]</a></td><td class="mono">(514) 555-0404</td><td>Mar 2025</td><td><span class="badge badge-yellow">Pending</span></td><td><span class="badge badge-yellow">⏳ Pending</span></td><td><div class="action-btns"><button class="btn-icon approve" onclick="approveUser('Almaz G.')">Approve</button><button class="btn-icon danger" onclick="showToast('Declined','❌')">Decline</button></div></td></tr>
+                <tr><td><strong>Sophie Mekonnen</strong></td><td class="mono"><a href="/cdn-cgi/l/email-protection" class="__cf_email__" data-cfemail="0f7c607f67666a21624f607a7b63606064216c6062">[email&#160;protected]</a></td><td class="mono">(514) 555-0505</td><td>Sep 2021</td><td><span class="badge badge-green">Active</span></td><td><span class="badge badge-blue">No Access</span></td><td><div class="action-btns"><button class="btn-icon" onclick="showToast('Editing Sophie Mekonnen','✏️')">Edit</button><button class="btn-icon danger" onclick="showToast('Member suspended','⚠️')">Suspend</button></div></td></tr>
+                <tr><td><strong>Haile Bekele</strong></td><td class="mono"><a href="/cdn-cgi/l/email-protection" class="__cf_email__" data-cfemail="9df5fcf4f1f8b3ffddfaf0fcf4f1b3fef2f0">[email&#160;protected]</a></td><td class="mono">(514) 555-0606</td><td>Feb 2020</td><td><span class="badge badge-green">Active</span></td><td><span class="badge badge-green">✓ Approved</span></td><td><div class="action-btns"><button class="btn-icon" onclick="showToast('Editing Haile Bekele','✏️')">Edit</button><button class="btn-icon danger">Suspend</button></div></td></tr>
+                <tr><td><strong>Tigist Wolde</strong></td><td class="mono"><a href="/cdn-cgi/l/email-protection" class="__cf_email__" data-cfemail="aedac7c9c7ddda80d9eec3cfc7c280cdc1c3">[email&#160;protected]</a></td><td class="mono">(514) 555-0707</td><td>Mar 2025</td><td><span class="badge badge-yellow">Pending</span></td><td><span class="badge badge-yellow">⏳ Pending</span></td><td><div class="action-btns"><button class="btn-icon approve" onclick="approveUser('Tigist W.')">Approve</button><button class="btn-icon danger">Decline</button></div></td></tr>
+              </tbody>
+            </table>
+          </div>
+        </div>
+      </div>
+    </div>
+
+    <!-- ═══ PRAYER REQUESTS ═══ -->
+    <div id="page-prayer" class="page">
+      <div class="two-col">
+        <div>
+          <div class="card">
+            <div class="card-header"><h3>Prayer Requests</h3><span class="badge badge-red">5 New</span></div>
+            <div class="card-body">
+              <div class="prayer-req-card urgent">
+                <h4>🔴 Healing · Urgent</h4>
+                <p>"Please pray for my father who is very ill in the hospital. He needs a miracle from God."</p>
+                <div class="meta"><span>Anonymous</span><span>2025-03-02 · 09:14</span><div class="action-btns"><button class="btn-icon" onclick="showToast('Marked as responded 🙏')">Respond</button><button class="btn-icon danger" onclick="showToast('Request archived')">Archive</button></div></div>
+              </div>
+              <div class="prayer-req-card">
+                <h4>Family &amp; Relations</h4>
+                <p>"ስለ ቤተሰቦቼ ጸሎት እለምናለሁ — I ask for prayers for my family to be united and blessed."</p>
+                <div class="meta"><span>Yohannes K.</span><span>2025-03-01 · 18:30</span><div class="action-btns"><button class="btn-icon" onclick="showToast('Marked as responded 🙏')">Respond</button><button class="btn-icon danger" onclick="showToast('Request archived')">Archive</button></div></div>
+              </div>
+              <div class="prayer-req-card">
+                <h4>Guidance &amp; Wisdom</h4>
+                <p>"I am at a crossroads in my life and need God's guidance for an important decision about my family."</p>
+                <div class="meta"><span>Marie T.</span><span>2025-02-28 · 14:05</span><div class="action-btns"><button class="btn-icon" onclick="showToast('Marked as responded 🙏')">Respond</button><button class="btn-icon danger" onclick="showToast('Request archived')">Archive</button></div></div>
+              </div>
+              <div class="prayer-req-card">
+                <h4>Thanksgiving · ምስጋና</h4>
+                <p>"Giving thanks to God for the healing of my mother after her surgery. Egziabher yimesgen!"</p>
+                <div class="meta"><span>Dawit A.</span><span>2025-02-27 · 10:00</span><div class="action-btns"><button class="btn-icon" onclick="showToast('Acknowledged 🙏')">Acknowledge</button><button class="btn-icon danger" onclick="showToast('Request archived')">Archive</button></div></div>
+              </div>
+              <div class="prayer-req-card">
+                <h4>Bereavement · ሐዘን</h4>
+                <p>"Please pray for the soul of my grandmother who passed away last week. May she rest in peace."</p>
+                <div class="meta"><span>Sophie M.</span><span>2025-02-25 · 20:45</span><div class="action-btns"><button class="btn-icon" onclick="showToast('Condolences sent 🙏')">Respond</button><button class="btn-icon danger" onclick="showToast('Request archived')">Archive</button></div></div>
+              </div>
+            </div>
+          </div>
+        </div>
+        <div>
+          <div class="card">
+            <div class="card-header"><h3>Prayer Stats</h3></div>
+            <div class="card-body">
+              <div style="display:flex;flex-direction:column;gap:12px;">
+                <div style="display:flex;justify-content:space-between;align-items:center;padding:10px 0;border-bottom:1px solid #F0F4F1;"><span style="font-size:0.88rem;">Total This Month</span><span class="badge badge-blue">18</span></div>
+                <div style="display:flex;justify-content:space-between;align-items:center;padding:10px 0;border-bottom:1px solid #F0F4F1;"><span style="font-size:0.88rem;">Awaiting Response</span><span class="badge badge-red">5</span></div>
+                <div style="display:flex;justify-content:space-between;align-items:center;padding:10px 0;border-bottom:1px solid #F0F4F1;"><span style="font-size:0.88rem;">Responded</span><span class="badge badge-green">11</span></div>
+                <div style="display:flex;justify-content:space-between;align-items:center;padding:10px 0;"><span style="font-size:0.88rem;">Archived</span><span class="badge badge-grey">2</span></div>
+              </div>
+            </div>
+          </div>
+          <div class="card" style="margin-top:0;">
+            <div class="card-header"><h3>Post Community Prayer</h3></div>
+            <div class="card-body">
+              <div class="form-field"><label>Prayer Title</label><input type="text" placeholder="e.g. Weekly Intercessions"></div>
+              <div class="form-field" style="margin-top:12px;"><label>Prayer Text</label><textarea placeholder="Write the community prayer to be displayed on the website..."></textarea></div>
+              <div class="form-actions" style="margin-top:12px;"><button class="btn-save" onclick="showToast('Community prayer published ✞')">Publish to Website</button></div>
+            </div>
+          </div>
+        </div>
+      </div>
+    </div>
+
+    <!-- ═══ CONTACT MESSAGES ═══ -->
+    <div id="page-contact" class="page">
+      <div class="card">
+        <div class="card-header"><h3>Contact Messages</h3><span class="badge badge-red">2 Unread</span></div>
+        <div class="card-body">
+          <div style="overflow-x:auto;">
+            <table class="data-table">
+              <thead><tr><th>Name</th><th>Email</th><th>Subject</th><th>Date</th><th>Status</th><th>Actions</th></tr></thead>
+              <tbody>
+                <tr><td><strong>Sophie Mekonnen</strong></td><td class="mono"><a href="/cdn-cgi/l/email-protection" class="__cf_email__" data-cfemail="3c4f534c54555912517c53494850535357125f5351">[email&#160;protected]</a></td><td>Marriage Sacrament</td><td class="mono">2025-03-02</td><td><span class="badge badge-red">Unread</span></td><td><div class="action-btns"><button class="btn-icon" onclick="showToast('Opening message ✉️')">Read</button><button class="btn-icon" onclick="showToast('Replied to Sophie ✉️')">Reply</button></div></td></tr>
+                <tr><td><strong>Jean-Paul Tremblay</strong></td><td class="mono"><a href="/cdn-cgi/l/email-protection" class="__cf_email__" data-cfemail="0369732d7743646e626a6f2d606c6e">[email&#160;protected]</a></td><td>General Inquiry</td><td class="mono">2025-03-01</td><td><span class="badge badge-red">Unread</span></td><td><div class="action-btns"><button class="btn-icon" onclick="showToast('Opening message ✉️')">Read</button><button class="btn-icon" onclick="showToast('Replied ✉️')">Reply</button></div></td></tr>
+                <tr><td><strong>Miriam Assefa</strong></td><td class="mono"><a href="/cdn-cgi/l/email-protection" class="__cf_email__" data-cfemail="a6cbcfd4cfc7cb88c7e6cec9d2cbc7cfca88c5c9cb">[email&#160;protected]</a></td><td>Youth Programs</td><td class="mono">2025-02-28</td><td><span class="badge badge-green">Replied</span></td><td><div class="action-btns"><button class="btn-icon" onclick="showToast('Opening message ✉️')">View</button><button class="btn-icon danger" onclick="showToast('Message archived')">Archive</button></div></td></tr>
+                <tr><td><strong>Dawit Alemu</strong></td><td class="mono"><a href="/cdn-cgi/l/email-protection" class="__cf_email__" data-cfemail="452124322c316b24052d2a3128242c296b262a28">[email&#160;protected]</a></td><td>Baptism</td><td class="mono">2025-02-25</td><td><span class="badge badge-green">Replied</span></td><td><div class="action-btns"><button class="btn-icon" onclick="showToast('Opening message ✉️')">View</button><button class="btn-icon danger" onclick="showToast('Message archived')">Archive</button></div></td></tr>
+              </tbody>
+            </table>
+          </div>
+        </div>
+      </div>
+    </div>
+
+    <!-- ═══ EVENTS ═══ -->
+    <div id="page-events" class="page">
+      <div class="two-col">
+        <div>
+          <div class="card">
+            <div class="card-header"><h3>All Events</h3><button class="topbar-btn primary" onclick="openModal('modal-add-event')">+ Add Event</button></div>
+            <div class="card-body" style="padding:0;">
+              <table class="data-table">
+                <thead><tr><th>Event</th><th>Date</th><th>Type</th><th>Status</th><th>Actions</th></tr></thead>
+                <tbody>
+                  <tr><td><strong>Fasika — ፋሲካ</strong></td><td class="mono">2025-04-15</td><td><span class="badge badge-red">Holy Day</span></td><td><span class="badge badge-green">Published</span></td><td><div class="action-btns"><button class="btn-icon" onclick="showToast('Editing Fasika event ✏️')">Edit</button><button class="btn-icon danger" onclick="showToast('Event deleted')">Delete</button></div></td></tr>
+                  <tr><td><strong>Community Fundraiser</strong></td><td class="mono">2025-03-28</td><td><span class="badge badge-blue">Community</span></td><td><span class="badge badge-green">Published</span></td><td><div class="action-btns"><button class="btn-icon" onclick="showToast('Editing event ✏️')">Edit</button><button class="btn-icon danger">Delete</button></div></td></tr>
+                  <tr><td><strong>Timkat — ጥምቀት</strong></td><td class="mono">2026-01-19</td><td><span class="badge badge-red">Holy Day</span></td><td><span class="badge badge-yellow">Draft</span></td><td><div class="action-btns"><button class="btn-icon" onclick="showToast('Event published ✅')">Publish</button><button class="btn-icon" onclick="showToast('Editing event ✏️')">Edit</button></div></td></tr>
+                  <tr><td><strong>Youth Summer Camp</strong></td><td class="mono">2025-06-TBD</td><td><span class="badge badge-green">Youth</span></td><td><span class="badge badge-yellow">Draft</span></td><td><div class="action-btns"><button class="btn-icon" onclick="showToast('Event published ✅')">Publish</button><button class="btn-icon" onclick="showToast('Editing event ✏️')">Edit</button></div></td></tr>
+                  <tr><td><strong>Genna — ገና</strong></td><td class="mono">2026-01-07</td><td><span class="badge badge-red">Holy Day</span></td><td><span class="badge badge-yellow">Draft</span></td><td><div class="action-btns"><button class="btn-icon" onclick="showToast('Event published ✅')">Publish</button><button class="btn-icon" onclick="showToast('Editing event ✏️')">Edit</button></div></td></tr>
+                </tbody>
+              </table>
+            </div>
+          </div>
+        </div>
+        <div>
+          <div class="card">
+            <div class="card-header"><h3>Add New Event</h3></div>
+            <div class="card-body">
+              <div style="display:flex;flex-direction:column;gap:12px;">
+                <div class="form-field"><label>Event Name (English)</label><input type="text" placeholder="e.g. Fasika — Easter"></div>
+                <div class="form-field"><label>Event Name (Amharic)</label><input type="text" placeholder="e.g. ፋሲካ"></div>
+                <div class="form-field"><label>Date</label><input type="date"></div>
+                <div class="form-field"><label>Event Type</label><select><option>Holy Day</option><option>Community Event</option><option>Youth</option><option>Fundraiser</option><option>Other</option></select></div>
+                <div class="form-field"><label>Description</label><textarea placeholder="Event description in French, English and Amharic..."></textarea></div>
+                <div class="form-actions"><button class="btn-save" onclick="showToast('Event saved as draft 📅')">Save Draft</button><button class="btn-save" style="background:var(--blue);" onclick="showToast('Event published to website ✅')">Publish Now</button></div>
+              </div>
+            </div>
+          </div>
+        </div>
+      </div>
+    </div>
+
+    <!-- ═══ SERMONS ═══ -->
+    <div id="page-sermons" class="page">
+      <div class="two-col">
+        <div>
+          <div class="card">
+            <div class="card-header"><h3>Sermon Library (28)</h3><button class="topbar-btn primary" onclick="openModal('modal-upload-sermon')">+ Upload Sermon</button></div>
+            <div class="card-body" style="padding:0;">
+              <table class="data-table">
+                <thead><tr><th>Title</th><th>Speaker</th><th>Language</th><th>Date</th><th>Status</th><th>Actions</th></tr></thead>
+                <tbody>
+                  <tr><td><strong>La Signification de Tewahedo</strong></td><td>Parish Priest</td><td><span class="badge badge-green">AM+FR</span></td><td class="mono">Mar 2025</td><td><span class="badge badge-green">Published</span></td><td><div class="action-btns"><button class="btn-icon" onclick="showToast('Playing sermon ▶')">▶ Play</button><button class="btn-icon danger" onclick="showToast('Sermon deleted')">Delete</button></div></td></tr>
+                  <tr><td><strong>Timkat — Feast of Epiphany</strong></td><td>Parish Priest</td><td><span class="badge badge-blue">GE+AM</span></td><td class="mono">Jan 2025</td><td><span class="badge badge-green">Published</span></td><td><div class="action-btns"><button class="btn-icon" onclick="showToast('Playing sermon ▶')">▶ Play</button><button class="btn-icon danger">Delete</button></div></td></tr>
+                  <tr><td><strong>Fasika — Resurrection and Life</strong></td><td>Guest Priest</td><td><span class="badge badge-green">AM</span></td><td class="mono">Apr 2024</td><td><span class="badge badge-green">Published</span></td><td><div class="action-btns"><button class="btn-icon" onclick="showToast('Playing sermon ▶')">▶ Play</button><button class="btn-icon danger">Delete</button></div></td></tr>
+                  <tr><td><strong>Orthodox Faith in the Diaspora</strong></td><td>Parish Priest</td><td><span class="badge badge-blue">EN+FR</span></td><td class="mono">Oct 2024</td><td><span class="badge badge-green">Published</span></td><td><div class="action-btns"><button class="btn-icon" onclick="showToast('Playing sermon ▶')">▶ Play</button><button class="btn-icon danger">Delete</button></div></td></tr>
+                  <tr><td><strong>New Sermon (Untitled)</strong></td><td>—</td><td>—</td><td class="mono">—</td><td><span class="badge badge-yellow">Draft</span></td><td><div class="action-btns"><button class="btn-icon" onclick="showToast('Editing sermon ✏️')">Edit</button><button class="btn-icon danger">Delete</button></div></td></tr>
+                </tbody>
+              </table>
+            </div>
+          </div>
+        </div>
+        <div>
+          <div class="card">
+            <div class="card-header"><h3>Upload New Sermon</h3></div>
+            <div class="card-body">
+              <div class="upload-zone" onclick="showToast('File browser opened 📂')">
+                <span class="upload-icon">🎙️</span>
+                <p><strong>Click to upload</strong> audio or video file</p>
+                <p>MP3, MP4, WAV · Max 500MB</p>
+              </div>
+              <div style="display:flex;flex-direction:column;gap:11px;margin-top:14px;">
+                <div class="form-field"><label>Sermon Title</label><input type="text" placeholder="Title in English or Amharic"></div>
+                <div class="form-field"><label>Speaker / Preacher</label><input type="text" placeholder="Name of priest or deacon"></div>
+                <div class="form-field"><label>Language</label><select><option>Amharic (አማርኛ)</option><option>Ge'ez (ግዕዝ)</option><option>French (Français)</option><option>English</option><option>Amharic + French</option></select></div>
+                <div class="form-field"><label>Date Recorded</label><input type="date"></div>
+                <div class="form-actions"><button class="btn-save" onclick="showToast('Sermon uploaded successfully 🎙️')">Upload &amp; Publish</button></div>
+              </div>
+            </div>
+          </div>
+        </div>
+      </div>
+    </div>
+
+    <!-- ═══ GALLERY ═══ -->
+    <div id="page-gallery" class="page">
+      <div class="card">
+        <div class="card-header"><h3>Photo Gallery Manager</h3><button class="topbar-btn primary" onclick="showToast('Opening file browser 📂')">+ Upload Photos</button></div>
+        <div class="card-body">
+          <div class="upload-zone" onclick="showToast('File browser opened 📂')" style="margin-bottom:20px;">
+            <span class="upload-icon">🖼️</span>
+            <p><strong>Click to upload photos</strong> or drag and drop</p>
+            <p>JPG, PNG, WEBP · Max 10MB each</p>
+          </div>
+          <div style="display:grid;grid-template-columns:repeat(auto-fill,minmax(160px,1fr));gap:12px;">
+            <div style="border:1px solid #E2EAE5;border-radius:4px;overflow:hidden;background:#F0F4F1;">
+              <div style="height:120px;background:linear-gradient(135deg,#135C2D,#0D1F13);display:flex;align-items:center;justify-content:center;font-size:2rem;">✞</div>
+              <div style="padding:8px 10px;display:flex;justify-content:space-between;align-items:center;"><span style="font-size:0.75rem;color:#555;">Divine Liturgy</span><button class="btn-icon danger" style="padding:2px 7px;font-size:0.7rem;" onclick="showToast('Photo deleted 🗑️')">✕</button></div>
+            </div>
+            <div style="border:1px solid #E2EAE5;border-radius:4px;overflow:hidden;background:#F0F4F1;">
+              <div style="height:120px;background:linear-gradient(135deg,#922B21,#1E3824);display:flex;align-items:center;justify-content:center;font-size:2rem;">🕯️</div>
+              <div style="padding:8px 10px;display:flex;justify-content:space-between;align-items:center;"><span style="font-size:0.75rem;color:#555;">Timkat 2024</span><button class="btn-icon danger" style="padding:2px 7px;font-size:0.7rem;" onclick="showToast('Photo deleted 🗑️')">✕</button></div>
+            </div>
+            <div style="border:1px solid #E2EAE5;border-radius:4px;overflow:hidden;background:#F0F4F1;">
+              <div style="height:120px;background:linear-gradient(135deg,#1B7A3E,#162B1C);display:flex;align-items:center;justify-content:center;font-size:2rem;">📖</div>
+              <div style="padding:8px 10px;display:flex;justify-content:space-between;align-items:center;"><span style="font-size:0.75rem;color:#555;">Sunday School</span><button class="btn-icon danger" style="padding:2px 7px;font-size:0.7rem;" onclick="showToast('Photo deleted 🗑️')">✕</button></div>
+            </div>
+            <div style="border:2px dashed #C5D8CB;border-radius:4px;display:flex;align-items:center;justify-content:center;height:154px;cursor:pointer;color:#aaa;font-size:0.8rem;flex-direction:column;gap:6px;" onclick="showToast('Opening file browser 📂')"><span style="font-size:1.8rem;">+</span>Add Photo</div>
+          </div>
+        </div>
+      </div>
+    </div>
+
+    <!-- ═══ ANNOUNCEMENTS ═══ -->
+    <div id="page-announcements" class="page">
+      <div class="two-col">
+        <div>
+          <div class="card">
+            <div class="card-header"><h3>Published Announcements</h3><button class="topbar-btn primary" onclick="showToast('Creating new announcement 📢')">+ New</button></div>
+            <div class="card-body">
+              <div style="display:flex;flex-direction:column;gap:12px;">
+                <div style="padding:14px;background:#FAFCFB;border:1px solid #E2EAE5;border-left:3px solid var(--green);border-radius:4px;">
+                  <div style="display:flex;justify-content:space-between;align-items:flex-start;flex-wrap:wrap;gap:8px;">
+                    <div><div style="font-family:var(--font-ui);font-size:0.78rem;color:var(--green-dark);margin-bottom:4px;">Fasika Service Times Updated</div><div style="font-size:0.85rem;color:#555;">Special service times for Fasika 2025 have been confirmed. Kidase begins at 12:00 AM midnight.</div><div style="font-size:0.72rem;color:#bbb;margin-top:6px;font-family:var(--font-mono);">Published: 2025-03-01</div></div>
+                    <div class="action-btns"><button class="btn-icon" onclick="showToast('Editing announcement ✏️')">Edit</button><button class="btn-icon danger" onclick="showToast('Announcement removed')">Remove</button></div>
+                  </div>
+                </div>
+                <div style="padding:14px;background:#FAFCFB;border:1px solid #E2EAE5;border-left:3px solid var(--yellow);border-radius:4px;">
+                  <div style="display:flex;justify-content:space-between;align-items:flex-start;flex-wrap:wrap;gap:8px;">
+                    <div><div style="font-family:var(--font-ui);font-size:0.78rem;color:var(--green-dark);margin-bottom:4px;">Community Fundraiser — March 28</div><div style="font-size:0.85rem;color:#555;">Annual community gathering with traditional food and fundraising. All families welcome.</div><div style="font-size:0.72rem;color:#bbb;margin-top:6px;font-family:var(--font-mono);">Published: 2025-02-28</div></div>
+                    <div class="action-btns"><button class="btn-icon" onclick="showToast('Editing announcement ✏️')">Edit</button><button class="btn-icon danger" onclick="showToast('Announcement removed')">Remove</button></div>
+                  </div>
+                </div>
+              </div>
+            </div>
+          </div>
+        </div>
+        <div>
+          <div class="card">
+            <div class="card-header"><h3>New Announcement</h3></div>
+            <div class="card-body">
+              <div style="display:flex;flex-direction:column;gap:11px;">
+                <div class="form-field"><label>Title (English)</label><input type="text" placeholder="Announcement title"></div>
+                <div class="form-field"><label>Title (Amharic / French)</label><input type="text" placeholder="ማስታወቂያ ርዕስ / Titre"></div>
+                <div class="form-field"><label>Body</label><textarea placeholder="Full announcement text..."></textarea></div>
+                <div class="form-field"><label>Priority</label><select><option>Normal</option><option>Important</option><option>Urgent</option></select></div>
+                <div class="form-actions"><button class="btn-save" onclick="showToast('Announcement published 📢')">Publish</button><button class="btn-cancel">Save Draft</button></div>
+              </div>
+            </div>
+          </div>
+        </div>
+      </div>
+    </div>
+
+    <!-- ═══ FINANCIAL OVERVIEW ═══ -->
+    <div id="page-finance" class="page">
+      <div class="stat-grid">
+        <div class="stat-card"><div class="stat-label">Total Income — March 2025</div><div class="stat-value">$2,415</div><div class="stat-sub">↑ 12% vs last month</div><div class="stat-icon">📈</div></div>
+        <div class="stat-card yellow"><div class="stat-label">Member Contributions</div><div class="stat-value">$1,420</div><div class="stat-sub">71 of 142 paid</div><div class="stat-icon">👥</div></div>
+        <div class="stat-card" style="border-left-color:#8B5CF6"><div class="stat-label">ሙዳየ ምጽዋት (Alms)</div><div class="stat-value">$355</div><div class="stat-sub">Cash collected</div><div class="stat-icon">🕊️</div></div>
+        <div class="stat-card blue"><div class="stat-label">Online Donations</div><div class="stat-value">$640</div><div class="stat-sub">9 transactions</div><div class="stat-icon">💰</div></div>
+        <div class="stat-card red"><div class="stat-label">Total Expenses</div><div class="stat-value">$1,180</div><div class="stat-sub">Rent, utilities, supplies</div><div class="stat-icon">📉</div></div>
+        <div class="stat-card" style="border-left-color:#059669"><div class="stat-label">Net Balance (March)</div><div class="stat-value">+$1,235</div><div class="stat-sub">Surplus this month</div><div class="stat-icon">✅</div></div>
+      </div>
+
+      <div class="two-col">
+        <div>
+          <!-- Monthly Bar Chart -->
+          <div class="card">
+            <div class="card-header"><h3>Income vs Expenses — 2025</h3><button class="topbar-btn" onclick="showPage('report', document.querySelector('.nav-item[onclick*=report]'))">Full Report →</button></div>
+            <div class="card-body">
+              <div style="display:flex;flex-direction:column;gap:14px;">
+                <div style="display:flex;align-items:center;gap:10px;font-size:0.82rem;flex-wrap:wrap;">
+                  <div style="display:flex;align-items:center;gap:5px;"><div style="width:12px;height:12px;background:var(--green);border-radius:2px;"></div>Income</div>
+                  <div style="display:flex;align-items:center;gap:5px;"><div style="width:12px;height:12px;background:var(--red);border-radius:2px;"></div>Expenses</div>
+                </div>
+                <div id="bar-chart" style="display:flex;align-items:flex-end;gap:6px;height:160px;padding-bottom:20px;position:relative;border-bottom:2px solid #EEF3F0;">
+                </div>
+                <div style="display:flex;justify-content:space-around;font-size:0.68rem;color:#aaa;font-family:var(--font-mono);" id="bar-labels"></div>
+              </div>
+            </div>
+          </div>
+
+          <!-- Income Breakdown Pie-style -->
+          <div class="card">
+            <div class="card-header"><h3>Income Sources Breakdown — March 2025</h3></div>
+            <div class="card-body">
+              <div style="display:flex;flex-direction:column;gap:10px;">
+                <div>
+                  <div style="display:flex;justify-content:space-between;margin-bottom:5px;font-size:0.85rem;"><span>👥 Member Contributions</span><strong style="color:var(--green);">$1,420 (58.8%)</strong></div>
+                  <div style="background:#EEF3F0;height:10px;border-radius:5px;overflow:hidden;"><div style="width:58.8%;height:100%;background:var(--green);border-radius:5px;"></div></div>
+                </div>
+                <div>
+                  <div style="display:flex;justify-content:space-between;margin-bottom:5px;font-size:0.85rem;"><span>🕊️ ሙዳየ ምጽዋት (Alms Box)</span><strong style="color:#8B5CF6;">$355 (14.7%)</strong></div>
+                  <div style="background:#EEF3F0;height:10px;border-radius:5px;overflow:hidden;"><div style="width:14.7%;height:100%;background:#8B5CF6;border-radius:5px;"></div></div>
+                </div>
+                <div>
+                  <div style="display:flex;justify-content:space-between;margin-bottom:5px;font-size:0.85rem;"><span>💰 Online Donations</span><strong style="color:var(--blue);">$640 (26.5%)</strong></div>
+                  <div style="background:#EEF3F0;height:10px;border-radius:5px;overflow:hidden;"><div style="width:26.5%;height:100%;background:var(--blue);border-radius:5px;"></div></div>
+                </div>
+              </div>
+            </div>
+          </div>
+        </div>
+        <div>
+          <!-- Annual Progress -->
+          <div class="card">
+            <div class="card-header"><h3>Annual Budget Progress — 2025</h3></div>
+            <div class="card-body">
+              <div style="display:flex;flex-direction:column;gap:16px;">
+                <div>
+                  <div style="display:flex;justify-content:space-between;font-size:0.82rem;margin-bottom:6px;"><span style="color:#666;">Annual Income Goal</span><span style="font-family:var(--font-mono);color:var(--green);">$7,050 / $24,000</span></div>
+                  <div style="background:#EEF3F0;height:14px;border-radius:7px;overflow:hidden;"><div style="width:29.4%;height:100%;background:linear-gradient(90deg,var(--green),var(--green-light));border-radius:7px;transition:width 0.8s;"></div></div>
+                  <div style="font-size:0.72rem;color:#aaa;margin-top:3px;">29.4% of annual goal reached (Q1)</div>
+                </div>
+                <div style="border-top:1px solid #EEF3F0;padding-top:14px;">
+                  <div style="font-family:var(--font-ui);font-size:0.65rem;letter-spacing:0.1em;text-transform:uppercase;color:#888;margin-bottom:10px;">Monthly Targets</div>
+                  <div style="display:flex;flex-direction:column;gap:8px;">
+                    <div style="display:flex;justify-content:space-between;align-items:center;font-size:0.82rem;"><span>January</span><div style="display:flex;align-items:center;gap:8px;"><div style="width:80px;background:#EEF3F0;height:6px;border-radius:3px;overflow:hidden;"><div style="width:82%;height:100%;background:var(--green);border-radius:3px;"></div></div><span style="font-family:var(--font-mono);font-size:0.75rem;color:var(--green);">$1,968</span></div></div>
+                    <div style="display:flex;justify-content:space-between;align-items:center;font-size:0.82rem;"><span>February</span><div style="display:flex;align-items:center;gap:8px;"><div style="width:80px;background:#EEF3F0;height:6px;border-radius:3px;overflow:hidden;"><div style="width:77%;height:100%;background:var(--green);border-radius:3px;"></div></div><span style="font-family:var(--font-mono);font-size:0.75rem;color:var(--green);">$2,667</span></div></div>
+                    <div style="display:flex;justify-content:space-between;align-items:center;font-size:0.82rem;"><span>March</span><div style="display:flex;align-items:center;gap:8px;"><div style="width:80px;background:#EEF3F0;height:6px;border-radius:3px;overflow:hidden;"><div style="width:100%;height:100%;background:var(--yellow);border-radius:3px;"></div></div><span style="font-family:var(--font-mono);font-size:0.75rem;color:#B8860B;">$2,415</span></div></div>
+                    <div style="display:flex;justify-content:space-between;align-items:center;font-size:0.82rem;color:#bbb;"><span>April</span><div style="display:flex;align-items:center;gap:8px;"><div style="width:80px;background:#EEF3F0;height:6px;border-radius:3px;overflow:hidden;"><div style="width:0%;height:100%;background:var(--green);border-radius:3px;"></div></div><span style="font-family:var(--font-mono);font-size:0.75rem;">—</span></div></div>
+                  </div>
+                </div>
+              </div>
+            </div>
+          </div>
+
+          <!-- Quick Actions -->
+          <div class="card">
+            <div class="card-header"><h3>Quick Actions</h3></div>
+            <div class="card-body" style="display:flex;flex-direction:column;gap:9px;">
+              <button class="btn-save" style="width:100%;text-align:left;padding:11px 16px;" onclick="showPage('contributions',document.querySelector('.nav-item[onclick*=contributions]'))">👥 Record Member Contribution</button>
+              <button class="btn-save" style="width:100%;text-align:left;padding:11px 16px;background:var(--blue);" onclick="showPage('mudaye',document.querySelector('.nav-item[onclick*=mudaye]'))">🕊️ Record ሙዳየ ምጽዋት Collection</button>
+              <button class="btn-save" style="width:100%;text-align:left;padding:11px 16px;background:#8B5CF6;" onclick="showPage('report',document.querySelector('.nav-item[onclick*=report]'))">📊 Generate Monthly Report</button>
+              <button class="topbar-btn" style="width:100%;text-align:left;padding:11px 16px;" onclick="showToast('Exporting full ledger to Excel 📊')">📥 Export Full Ledger (Excel)</button>
+            </div>
+          </div>
+        </div>
+      </div>
+    </div>
+
+    <!-- ═══ MEMBER CONTRIBUTIONS ═══ -->
+    <div id="page-contributions" class="page">
+      <div class="stat-grid">
+        <div class="stat-card"><div class="stat-label">Paid This Month</div><div class="stat-value">71</div><div class="stat-sub">of 142 members</div></div>
+        <div class="stat-card yellow"><div class="stat-label">Unpaid</div><div class="stat-value">71</div><div class="stat-sub">Reminders to send</div></div>
+        <div class="stat-card"><div class="stat-label">Monthly Total</div><div class="stat-value">$1,420</div><div class="stat-sub">March 2025</div></div>
+        <div class="stat-card blue"><div class="stat-label">Avg per Member</div><div class="stat-value">$20</div><div class="stat-sub">Monthly rate</div></div>
+      </div>
+
+      <div class="two-col">
+        <div>
+          <div class="card">
+            <div class="card-header">
+              <h3>Monthly Contribution Records</h3>
+              <div style="display:flex;gap:8px;">
+                <button class="topbar-btn" onclick="openModal('modal-add-contribution')">+ Record Payment</button>
+                <button class="topbar-btn" onclick="showToast('Sending reminders to 71 members 📧')">📧 Send Reminders</button>
+              </div>
+            </div>
+            <div class="card-body">
+              <div class="search-bar">
+                <input class="search-input" type="text" placeholder="Search member...">
+                <select class="filter-select" id="contrib-month-filter">
+                  <option>March 2025</option><option>February 2025</option><option>January 2025</option>
+                </select>
+                <select class="filter-select">
+                  <option>All Status</option><option>Paid</option><option>Unpaid</option><option>Partial</option>
+                </select>
+              </div>
+              <div style="overflow-x:auto;">
+                <table class="data-table">
+                  <thead><tr><th>Member</th><th>Amount Due</th><th>Amount Paid</th><th>Date Paid</th><th>Method</th><th>Status</th><th>Actions</th></tr></thead>
+                  <tbody id="contrib-table">
+                    <tr><td><strong>Marie Tekeste</strong></td><td class="mono">$20.00</td><td class="donation-amount">$20.00</td><td class="mono">2025-03-01</td><td><span class="badge badge-blue">e-Transfer</span></td><td><span class="badge badge-green">Paid ✓</span></td><td><button class="btn-icon" onclick="showToast('Receipt sent 🧾')">Receipt</button></td></tr>
+                    <tr><td><strong>Dawit Alemu</strong></td><td class="mono">$20.00</td><td class="donation-amount">$20.00</td><td class="mono">2025-03-02</td><td><span class="badge badge-green">Cash</span></td><td><span class="badge badge-green">Paid ✓</span></td><td><button class="btn-icon" onclick="showToast('Receipt sent 🧾')">Receipt</button></td></tr>
+                    <tr><td><strong>Haile Bekele</strong></td><td class="mono">$20.00</td><td class="donation-amount">$20.00</td><td class="mono">2025-03-01</td><td><span class="badge badge-blue">e-Transfer</span></td><td><span class="badge badge-green">Paid ✓</span></td><td><button class="btn-icon" onclick="showToast('Receipt sent 🧾')">Receipt</button></td></tr>
+                    <tr><td><strong>Sophie Mekonnen</strong></td><td class="mono">$20.00</td><td class="donation-amount">$10.00</td><td class="mono">2025-03-03</td><td><span class="badge badge-green">Cash</span></td><td><span class="badge badge-yellow">Partial</span></td><td><button class="btn-icon" onclick="showToast('Reminder sent 📧')">Remind</button></td></tr>
+                    <tr><td><strong>Yohannes Kebede</strong></td><td class="mono">$20.00</td><td class="mono" style="color:#ccc;">—</td><td class="mono" style="color:#ccc;">—</td><td>—</td><td><span class="badge badge-red">Unpaid</span></td><td><button class="btn-icon" onclick="showToast('Reminder sent 📧')">Remind</button></td></tr>
+                    <tr><td><strong>Almaz Girma</strong></td><td class="mono">$20.00</td><td class="mono" style="color:#ccc;">—</td><td class="mono" style="color:#ccc;">—</td><td>—</td><td><span class="badge badge-red">Unpaid</span></td><td><button class="btn-icon" onclick="showToast('Reminder sent 📧')">Remind</button></td></tr>
+                    <tr><td><strong>Tigist Wolde</strong></td><td class="mono">$20.00</td><td class="donation-amount">$20.00</td><td class="mono">2025-03-04</td><td><span class="badge badge-blue">Interac</span></td><td><span class="badge badge-green">Paid ✓</span></td><td><button class="btn-icon" onclick="showToast('Receipt sent 🧾')">Receipt</button></td></tr>
+                  </tbody>
+                </table>
+              </div>
+              <div style="margin-top:14px;padding:12px;background:var(--green-pale);border-radius:4px;display:flex;justify-content:space-between;flex-wrap:wrap;gap:8px;font-size:0.85rem;">
+                <span>Showing 7 of 142 members</span>
+                <strong style="color:var(--green);">Page Total: $110.00</strong>
+              </div>
+            </div>
+          </div>
+        </div>
+
+        <div>
+          <!-- Set Monthly Rate -->
+          <div class="card">
+            <div class="card-header"><h3>Contribution Settings</h3></div>
+            <div class="card-body">
+              <div style="display:flex;flex-direction:column;gap:12px;">
+                <div class="form-field">
+                  <label>Standard Monthly Rate (CAD)</label>
+                  <div style="display:flex;gap:8px;align-items:center;">
+                    <input type="number" value="20" placeholder="e.g. 20" style="padding:9px 12px;border:1px solid #D5E3DA;border-radius:4px;font-family:var(--font-body);font-size:0.95rem;outline:none;width:100%;background:#FAFCFB;">
+                    <button class="btn-save" style="white-space:nowrap;" onclick="showToast('Rate updated to $20/month ✅')">Update</button>
+                  </div>
+                </div>
+                <div class="form-field">
+                  <label>Payment Due Day Each Month</label>
+                  <select style="padding:9px 12px;border:1px solid #D5E3DA;border-radius:4px;font-family:var(--font-body);font-size:0.9rem;outline:none;background:#FAFCFB;">
+                    <option>1st of the month</option><option>7th of the month</option><option>15th of the month</option><option>Last Sunday</option>
+                  </select>
+                </div>
+                <div class="form-field">
+                  <label>Accepted Payment Methods</label>
+                  <div style="display:flex;flex-direction:column;gap:6px;margin-top:4px;">
+                    <label style="display:flex;align-items:center;gap:8px;font-size:0.85rem;color:#444;text-transform:none;letter-spacing:0;cursor:pointer;"><input type="checkbox" checked> Cash (in-person)</label>
+                    <label style="display:flex;align-items:center;gap:8px;font-size:0.85rem;color:#444;text-transform:none;letter-spacing:0;cursor:pointer;"><input type="checkbox" checked> e-Transfer / Interac</label>
+                    <label style="display:flex;align-items:center;gap:8px;font-size:0.85rem;color:#444;text-transform:none;letter-spacing:0;cursor:pointer;"><input type="checkbox" checked> Online (website)</label>
+                    <label style="display:flex;align-items:center;gap:8px;font-size:0.85rem;color:#444;text-transform:none;letter-spacing:0;cursor:pointer;"><input type="checkbox"> Cheque</label>
+                  </div>
+                </div>
+                <div class="form-actions"><button class="btn-save" onclick="showToast('Settings saved ✅')">Save Settings</button></div>
+              </div>
+            </div>
+          </div>
+
+          <!-- Collection Summary -->
+          <div class="card">
+            <div class="card-header"><h3>Collection Rate — March 2025</h3></div>
+            <div class="card-body">
+              <div style="text-align:center;padding:14px 0;">
+                <div style="font-family:var(--font-ui);font-size:2.8rem;color:var(--green);">50%</div>
+                <div style="font-size:0.8rem;color:#888;margin-top:2px;">71 of 142 members paid</div>
+                <div style="background:#EEF3F0;height:12px;border-radius:6px;overflow:hidden;margin-top:14px;"><div style="width:50%;height:100%;background:linear-gradient(90deg,var(--green),var(--green-light));border-radius:6px;"></div></div>
+              </div>
+              <div style="display:flex;flex-direction:column;gap:8px;margin-top:14px;border-top:1px solid #EEF3F0;padding-top:14px;">
+                <div style="display:flex;justify-content:space-between;font-size:0.84rem;"><span style="color:#666;">Total Collected</span><strong style="color:var(--green);">$1,420</strong></div>
+                <div style="display:flex;justify-content:space-between;font-size:0.84rem;"><span style="color:#666;">Expected Total</span><strong>$2,840</strong></div>
+                <div style="display:flex;justify-content:space-between;font-size:0.84rem;"><span style="color:#666;">Outstanding</span><strong style="color:var(--red);">$1,420</strong></div>
+              </div>
+              <button class="btn-save" style="width:100%;margin-top:12px;" onclick="showToast('Reminder sent to 71 unpaid members 📧')">📧 Send Reminder to Unpaid</button>
+            </div>
+          </div>
+        </div>
+      </div>
+    </div>
+
+    <!-- ═══ ሙዳየ ምጽዋት (ALMS BOX) ═══ -->
+    <div id="page-mudaye" class="page">
+      <!-- Explanation Banner -->
+      <div style="background:linear-gradient(135deg,#3730A3,#4C1D95);border-radius:6px;padding:22px 28px;margin-bottom:22px;color:#fff;border:1px solid rgba(139,92,246,0.4);">
+        <div style="display:flex;align-items:flex-start;gap:16px;flex-wrap:wrap;">
+          <div style="font-size:2.5rem;">🕊️</div>
+          <div>
+            <h3 style="font-family:var(--font-ui);font-size:0.95rem;letter-spacing:0.12em;text-transform:uppercase;color:#C4B5FD;margin-bottom:6px;">ሙዳየ ምጽዋት — Mudaye Mitsewat</h3>
+            <p style="font-size:0.9rem;color:rgba(255,255,255,0.8);line-height:1.7;max-width:700px;">The traditional Ethiopian Orthodox alms collection box placed at the entrance of the church. Offerings collected during Sunday Kidase and feast days for the poor, orphans, widows, and those in need. Every coin is a sacred act of charity. — <em style="color:#C4B5FD;">ምጽዋት ፈዋሽ ነው</em> (Charity heals)</p>
+          </div>
+        </div>
+      </div>
+
+      <div class="stat-grid">
+        <div class="stat-card" style="border-left-color:#8B5CF6"><div class="stat-label">This Month (March)</div><div class="stat-value" style="color:#6D28D9;">$355</div><div class="stat-sub">Sunday collections</div></div>
+        <div class="stat-card" style="border-left-color:#8B5CF6"><div class="stat-label">YTD Alms Total</div><div class="stat-value" style="color:#6D28D9;">$920</div><div class="stat-sub">Jan–Mar 2025</div></div>
+        <div class="stat-card" style="border-left-color:#8B5CF6"><div class="stat-label">Distributed</div><div class="stat-value" style="color:#6D28D9;">$710</div><div class="stat-sub">Charitable disbursements</div></div>
+        <div class="stat-card" style="border-left-color:#8B5CF6"><div class="stat-label">Balance on Hand</div><div class="stat-value" style="color:#6D28D9;">$210</div><div class="stat-sub">Available to distribute</div></div>
+      </div>
+
+      <div class="two-col">
+        <div>
+          <!-- Collections log -->
+          <div class="card">
+            <div class="card-header">
+              <h3>🕊️ Collections Log</h3>
+              <button class="topbar-btn primary" onclick="openModal('modal-add-mudaye')">+ Record Collection</button>
+            </div>
+            <div class="card-body" style="padding:0;">
+              <table class="data-table">
+                <thead><tr><th>Date</th><th>Occasion</th><th>Amount</th><th>Counted By</th><th>Notes</th><th>Actions</th></tr></thead>
+                <tbody>
+                  <tr><td class="mono">2025-03-02</td><td>Sunday Kidase</td><td class="donation-amount" style="color:#6D28D9;">$87.50</td><td>Deacon Samuel</td><td>—</td><td><button class="btn-icon" onclick="showToast('Record verified ✅')">Verify</button></td></tr>
+                  <tr><td class="mono">2025-02-23</td><td>Sunday Kidase</td><td class="donation-amount" style="color:#6D28D9;">$74.00</td><td>Deacon Samuel</td><td>—</td><td><button class="btn-icon" onclick="showToast('Record verified ✅')">Verify</button></td></tr>
+                  <tr><td class="mono">2025-02-19</td><td>Feast Day — Special</td><td class="donation-amount" style="color:#6D28D9;">$112.00</td><td>Parish Secretary</td><td>Timkat feast</td><td><button class="btn-icon" onclick="showToast('Record verified ✅')">Verify</button></td></tr>
+                  <tr><td class="mono">2025-02-16</td><td>Sunday Kidase</td><td class="donation-amount" style="color:#6D28D9;">$81.50</td><td>Deacon Samuel</td><td>—</td><td><button class="btn-icon" onclick="showToast('Record verified ✅')">Verify</button></td></tr>
+                  <tr><td class="mono">2025-01-19</td><td>Timkat — ጥምቀት</td><td class="donation-amount" style="color:#6D28D9;">$148.00</td><td>Parish Priest</td><td>Major feast collection</td><td><button class="btn-icon" onclick="showToast('Record verified ✅')">Verify</button></td></tr>
+                </tbody>
+              </table>
+            </div>
+          </div>
+
+          <!-- Disbursements -->
+          <div class="card">
+            <div class="card-header">
+              <h3>Charitable Disbursements</h3>
+              <button class="topbar-btn primary" onclick="openModal('modal-disbursement')">+ Record Disbursement</button>
+            </div>
+            <div class="card-body" style="padding:0;">
+              <table class="data-table">
+                <thead><tr><th>Date</th><th>Recipient / Purpose</th><th>Amount</th><th>Approved By</th><th>Status</th></tr></thead>
+                <tbody>
+                  <tr><td class="mono">2025-03-01</td><td>Family in need — Rent assistance</td><td class="donation-amount" style="color:var(--red);">$200.00</td><td>Parish Priest</td><td><span class="badge badge-green">Distributed</span></td></tr>
+                  <tr><td class="mono">2025-02-15</td><td>Medical support — elderly member</td><td class="donation-amount" style="color:var(--red);">$150.00</td><td>Parish Priest</td><td><span class="badge badge-green">Distributed</span></td></tr>
+                  <tr><td class="mono">2025-01-20</td><td>Food bank donation — Montreal</td><td class="donation-amount" style="color:var(--red);">$200.00</td><td>Church Council</td><td><span class="badge badge-green">Distributed</span></td></tr>
+                  <tr><td class="mono">2025-01-10</td><td>Orphan fund — Ethiopia</td><td class="donation-amount" style="color:var(--red);">$160.00</td><td>Church Council</td><td><span class="badge badge-green">Distributed</span></td></tr>
+                </tbody>
+              </table>
+            </div>
+          </div>
+        </div>
+
+        <div>
+          <!-- Record new collection -->
+          <div class="card">
+            <div class="card-header"><h3>Record New Collection</h3></div>
+            <div class="card-body">
+              <div style="display:flex;flex-direction:column;gap:12px;">
+                <div class="form-field"><label>Collection Date</label><input type="date"></div>
+                <div class="form-field"><label>Occasion / Service</label><select><option>Sunday Kidase</option><option>Wednesday Prayer</option><option>Feast Day — Timkat</option><option>Feast Day — Fasika</option><option>Feast Day — Genna</option><option>Special Collection</option></select></div>
+                <div class="form-field">
+                  <label>Amount Collected (CAD)</label>
+                  <div style="position:relative;">
+                    <span style="position:absolute;left:12px;top:50%;transform:translateY(-50%);color:#888;">$</span>
+                    <input type="number" placeholder="0.00" style="padding:9px 12px 9px 24px;border:1px solid #D5E3DA;border-radius:4px;font-family:var(--font-body);font-size:1rem;outline:none;width:100%;background:#FAFCFB;">
+                  </div>
+                </div>
+                <div class="form-field"><label>Counted / Witnessed By</label><input type="text" placeholder="Name of deacon or official"></div>
+                <div class="form-field"><label>Second Witness (required)</label><input type="text" placeholder="Name of second witness"></div>
+                <div class="form-field"><label>Notes</label><textarea placeholder="Any special notes about this collection..." style="min-height:70px;"></textarea></div>
+                <div class="form-actions"><button class="btn-save" style="background:#7C3AED;" onclick="showToast('ሙዳየ ምጽዋት collection recorded ✅')">Record Collection</button></div>
+                <p style="font-size:0.75rem;color:#aaa;font-style:italic;line-height:1.5;">All collections require two witnesses for accountability. Records are permanent and cannot be deleted.</p>
+              </div>
+            </div>
+          </div>
+
+          <!-- Balance Summary -->
+          <div class="card">
+            <div class="card-header"><h3>Balance Summary</h3></div>
+            <div class="card-body">
+              <div style="display:flex;flex-direction:column;gap:9px;">
+                <div style="display:flex;justify-content:space-between;padding:8px 0;border-bottom:1px solid #EEF3F0;font-size:0.85rem;"><span>Total Collected (2025)</span><strong style="color:#6D28D9;">+$920.00</strong></div>
+                <div style="display:flex;justify-content:space-between;padding:8px 0;border-bottom:1px solid #EEF3F0;font-size:0.85rem;"><span>Total Disbursed (2025)</span><strong style="color:var(--red);">−$710.00</strong></div>
+                <div style="display:flex;justify-content:space-between;padding:8px 0;font-size:0.95rem;font-weight:600;"><span>Current Balance</span><strong style="color:var(--green);font-size:1.1rem;">$210.00</strong></div>
+              </div>
+              <button class="btn-save" style="width:100%;margin-top:14px;background:#7C3AED;" onclick="openModal('modal-disbursement')">Authorize New Disbursement</button>
+            </div>
+          </div>
+        </div>
+      </div>
+    </div>
+
+    <!-- ═══ ONLINE DONATIONS ═══ -->
+    <div id="page-donations" class="page">
+      <div class="stat-grid">
+        <div class="stat-card"><div class="stat-label">March 2025</div><div class="stat-value">$640</div><div class="stat-sub">9 transactions</div></div>
+        <div class="stat-card yellow"><div class="stat-label">YTD Total</div><div class="stat-value">$1,748</div><div class="stat-sub">Jan–Mar 2025</div></div>
+        <div class="stat-card blue"><div class="stat-label">Annual Goal</div><div class="stat-value">$6,000</div><div class="stat-sub">29.1% reached</div></div>
+        <div class="stat-card"><div class="stat-label">Avg Donation</div><div class="stat-value">$71</div><div class="stat-sub">Per transaction</div></div>
+      </div>
+      <div class="card">
+        <div class="card-header">
+          <h3>Online Donation Transactions</h3>
+          <div style="display:flex;gap:8px;">
+            <button class="topbar-btn" onclick="showToast('Exporting to CSV 📊')">Export CSV</button>
+            <button class="topbar-btn" onclick="showToast('Generating receipts 🧾')">Generate Receipts</button>
+          </div>
+        </div>
+        <div class="card-body">
+          <div class="search-bar">
+            <input class="search-input" type="text" placeholder="Search by name, amount, purpose...">
+            <select class="filter-select"><option>All Months</option><option>March 2025</option><option>February 2025</option><option>January 2025</option></select>
+            <select class="filter-select"><option>All Purposes</option><option>General Fund</option><option>Youth Ministry</option><option>Building Fund</option></select>
+          </div>
+          <div style="overflow-x:auto;">
+            <table class="data-table">
+              <thead><tr><th>#</th><th>Donor</th><th>Amount</th><th>Purpose</th><th>Date</th><th>Method</th><th>Status</th><th>Receipt</th></tr></thead>
+              <tbody>
+                <tr><td class="mono">#0012</td><td>Dawit Alemu</td><td class="donation-amount">$100.00</td><td>General Fund</td><td class="mono">2025-03-02</td><td><span class="badge badge-blue">Stripe</span></td><td><span class="badge badge-green">Confirmed</span></td><td><button class="btn-icon" onclick="showToast('Receipt sent 🧾')">Send</button></td></tr>
+                <tr><td class="mono">#0011</td><td>Marie Tekeste</td><td class="donation-amount">$50.00</td><td>Youth Ministry</td><td class="mono">2025-03-01</td><td><span class="badge badge-blue">PayPal</span></td><td><span class="badge badge-green">Confirmed</span></td><td><button class="btn-icon" onclick="showToast('Receipt sent 🧾')">Send</button></td></tr>
+                <tr><td class="mono">#0010</td><td>Anonymous</td><td class="donation-amount">$25.00</td><td>General Fund</td><td class="mono">2025-02-28</td><td><span class="badge badge-green">Cash</span></td><td><span class="badge badge-green">Confirmed</span></td><td><button class="btn-icon" onclick="showToast('Receipt sent 🧾')">Send</button></td></tr>
+                <tr><td class="mono">#0009</td><td>Haile Bekele</td><td class="donation-amount">$200.00</td><td>Building Fund</td><td class="mono">2025-02-26</td><td><span class="badge badge-blue">Stripe</span></td><td><span class="badge badge-green">Confirmed</span></td><td><button class="btn-icon" onclick="showToast('Receipt sent 🧾')">Send</button></td></tr>
+                <tr><td class="mono">#0008</td><td>Sophie Mekonnen</td><td class="donation-amount">$75.00</td><td>General Fund</td><td class="mono">2025-02-24</td><td><span class="badge badge-blue">e-Transfer</span></td><td><span class="badge badge-green">Confirmed</span></td><td><button class="btn-icon" onclick="showToast('Receipt sent 🧾')">Send</button></td></tr>
+                <tr><td class="mono">#0007</td><td>Almaz Girma</td><td class="donation-amount">$50.00</td><td>Youth Ministry</td><td class="mono">2025-02-20</td><td><span class="badge badge-blue">Stripe</span></td><td><span class="badge badge-yellow">Pending</span></td><td><button class="btn-icon" onclick="showToast('Receipt pending')">—</button></td></tr>
+              </tbody>
+            </table>
+          </div>
+        </div>
+      </div>
+    </div>
+
+    <!-- ═══ MONTHLY FINANCIAL REPORT ═══ -->
+    <div id="page-report" class="page">
+
+      <!-- Controls -->
+      <div class="card" style="margin-bottom:22px;">
+        <div class="card-body" style="padding:16px 22px;">
+          <div style="display:flex;align-items:center;justify-content:space-between;flex-wrap:wrap;gap:12px;">
+            <div style="display:flex;align-items:center;gap:12px;flex-wrap:wrap;">
+              <select class="filter-select" id="report-month" style="font-size:0.9rem;padding:9px 16px;">
+                <option value="march">March 2025</option>
+                <option value="february">February 2025</option>
+                <option value="january">January 2025</option>
+              </select>
+              <button class="btn-save" onclick="generateReport()">⟳ Generate Report</button>
+            </div>
+            <div style="display:flex;gap:8px;flex-wrap:wrap;">
+              <button class="topbar-btn" onclick="showToast('Exported as PDF 📄')">📄 PDF</button>
+              <button class="topbar-btn" onclick="showToast('Exported as Excel 📊')">📊 Excel</button>
+              <button class="topbar-btn" onclick="showToast('Sent to Treasurer 📧')">📧 Email Treasurer</button>
+              <button class="topbar-btn primary" onclick="showToast('Report approved &amp; published ✅')">✅ Approve &amp; Publish</button>
+            </div>
+          </div>
+        </div>
+      </div>
+
+      <!-- ── Official Report Document ── -->
+      <div class="card">
+
+        <!-- Report Letterhead -->
+        <div style="padding:28px 32px;border-bottom:2px solid var(--green-dark);background:linear-gradient(135deg,var(--green-pale),#fff);">
+          <div style="display:flex;align-items:flex-start;justify-content:space-between;flex-wrap:wrap;gap:14px;">
+            <div>
+              <div style="display:flex;align-items:center;gap:12px;margin-bottom:10px;">
+                <span style="font-size:2.2rem;">✞</span>
+                <div>
+                  <div style="font-family:var(--font-ui);font-size:0.85rem;color:var(--green-dark);letter-spacing:0.12em;text-transform:uppercase;">Medhanealem Church — Montréal</div>
+                  <div style="font-size:0.75rem;color:#888;margin-top:2px;">Église Éthiopienne Orthodoxe Tewahedo · መድኃኔዓለም ቤተ-ክርስቲያን</div>
+                </div>
+              </div>
+              <div style="font-family:var(--font-ui);font-size:1.05rem;color:var(--green-dark);letter-spacing:0.08em;" id="rpt-title">MONTHLY FINANCIAL REPORT — MARCH 2025</div>
+              <div style="font-size:0.76rem;color:#888;margin-top:4px;">
+                Prepared: <span id="rpt-date">March 31, 2025</span> &nbsp;·&nbsp;
+                Report #: <span style="font-family:var(--font-mono);" id="rpt-ref">FR-2025-03</span>
+              </div>
+            </div>
+            <div style="text-align:right;">
+              <div style="display:flex;height:5px;width:100px;border-radius:2px;overflow:hidden;margin-left:auto;margin-bottom:8px;">
+                <div style="flex:1;background:var(--green);"></div><div style="flex:1;background:var(--yellow);"></div><div style="flex:1;background:var(--red);"></div>
+              </div>
+              <span class="badge badge-yellow">DRAFT — Pending Approval</span>
+            </div>
+          </div>
+        </div>
+
+        <div style="padding:28px 32px;">
+
+          <!-- ── Income Breakdown Visual ── -->
+          <div style="margin-bottom:26px;">
+            <div style="font-family:var(--font-ui);font-size:0.72rem;letter-spacing:0.14em;text-transform:uppercase;color:var(--green-dark);padding-bottom:7px;border-bottom:2px solid var(--green);margin-bottom:16px;">INCOME BREAKDOWN — SOURCES DE REVENUS</div>
+            <div style="display:flex;flex-direction:column;gap:13px;">
+              <!-- Contributions bar -->
+              <div>
+                <div style="display:flex;justify-content:space-between;font-size:0.86rem;margin-bottom:5px;">
+                  <span>👥 Member Monthly Contributions <em style="font-size:0.75rem;color:#888;">(የወር መዋጮ)</em></span>
+                  <strong id="lbl-contrib" style="color:var(--green);font-family:var(--font-mono);font-size:0.85rem;">$1,420.00 (59%)</strong>
+                </div>
+                <div style="background:#EEF3F0;height:13px;border-radius:6px;overflow:hidden;">
+                  <div id="bar-contrib" style="width:59%;height:100%;background:linear-gradient(90deg,var(--green),var(--green-light));border-radius:6px;transition:width 0.7s ease;"></div>
+                </div>
+              </div>
+              <!-- Mudaye bar -->
+              <div>
+                <div style="display:flex;justify-content:space-between;font-size:0.86rem;margin-bottom:5px;">
+                  <span>🕊️ ሙዳየ ምጽዋት — Alms Box <em style="font-size:0.75rem;color:#888;">(Tronc d'offrandes)</em></span>
+                  <strong id="lbl-mudaye" style="color:#7C3AED;font-family:var(--font-mono);font-size:0.85rem;">$355.00 (15%)</strong>
+                </div>
+                <div style="background:#EEF3F0;height:13px;border-radius:6px;overflow:hidden;">
+                  <div id="bar-mudaye" style="width:15%;height:100%;background:linear-gradient(90deg,#7C3AED,#A78BFA);border-radius:6px;transition:width 0.7s ease;"></div>
+                </div>
+              </div>
+              <!-- Donations bar -->
+              <div>
+                <div style="display:flex;justify-content:space-between;font-size:0.86rem;margin-bottom:5px;">
+                  <span>💰 Online Donations <em style="font-size:0.75rem;color:#888;">(ልዩ ልዩ ስጦታ)</em></span>
+                  <strong id="lbl-donation" style="color:var(--blue);font-family:var(--font-mono);font-size:0.85rem;">$640.00 (26%)</strong>
+                </div>
+                <div style="background:#EEF3F0;height:13px;border-radius:6px;overflow:hidden;">
+                  <div id="bar-donation" style="width:26%;height:100%;background:linear-gradient(90deg,var(--blue),#60A5FA);border-radius:6px;transition:width 0.7s ease;"></div>
+                </div>
+              </div>
+            </div>
+          </div>
+
+          <!-- ── INCOME TABLE ── -->
+          <div style="margin-bottom:26px;">
+            <div style="font-family:var(--font-ui);font-size:0.72rem;letter-spacing:0.14em;text-transform:uppercase;color:var(--green-dark);padding-bottom:7px;border-bottom:2px solid var(--green);margin-bottom:12px;">INCOME — REVENUS</div>
+            <div style="overflow-x:auto;">
+            <table class="data-table" style="font-size:0.86rem;">
+              <thead><tr><th>#</th><th>Source</th><th style="color:#888;font-size:0.6rem;">አማርኛ / Français</th><th>Expected</th><th style="text-align:right;">Actual</th><th style="text-align:right;">Variance</th></tr></thead>
+              <tbody>
+                <tr style="background:rgba(27,122,62,0.04);">
+                  <td class="mono">I-01</td>
+                  <td><strong>Member Monthly Contributions</strong></td>
+                  <td style="font-size:0.76rem;color:#999;">የወር መዋጮ · Cotisations</td>
+                  <td class="mono">$2,840.00</td>
+                  <td class="mono" style="text-align:right;font-weight:700;color:var(--green);" id="rpt-i01-act">$1,420.00</td>
+                  <td class="mono" style="text-align:right;" id="rpt-i01-var"><span style="color:var(--red);">−$1,420.00</span></td>
+                </tr>
+                <tr style="background:rgba(124,58,237,0.04);">
+                  <td class="mono">I-02</td>
+                  <td><strong>ሙዳየ ምጽዋት (Alms Box)</strong></td>
+                  <td style="font-size:0.76rem;color:#999;">ሙዳየ ምጽዋት · Tronc d'offrandes</td>
+                  <td class="mono">$300.00</td>
+                  <td class="mono" style="text-align:right;font-weight:700;color:#7C3AED;" id="rpt-i02-act">$355.00</td>
+                  <td class="mono" style="text-align:right;" id="rpt-i02-var"><span style="color:var(--green);">+$55.00</span></td>
+                </tr>
+                <tr style="background:rgba(26,107,154,0.04);">
+                  <td class="mono">I-03</td>
+                  <td><strong>Online Donations</strong></td>
+                  <td style="font-size:0.76rem;color:#999;">ልዩ ልዩ ስጦታ · Dons en ligne</td>
+                  <td class="mono">$500.00</td>
+                  <td class="mono" style="text-align:right;font-weight:700;color:var(--blue);" id="rpt-i03-act">$640.00</td>
+                  <td class="mono" style="text-align:right;" id="rpt-i03-var"><span style="color:var(--green);">+$140.00</span></td>
+                </tr>
+                <tr style="background:#F5F9F6;border-top:2px solid #D5E3DA;">
+                  <td colspan="3" style="font-family:var(--font-ui);font-size:0.7rem;letter-spacing:0.1em;text-transform:uppercase;color:var(--green-dark);font-weight:700;">TOTAL INCOME</td>
+                  <td class="mono" style="font-weight:700;">$3,640.00</td>
+                  <td class="mono" style="text-align:right;font-weight:800;font-size:1rem;color:var(--green);" id="rpt-inc-total-act">$2,415.00</td>
+                  <td class="mono" style="text-align:right;" id="rpt-inc-total-var"><span style="color:var(--red);">−$1,225.00</span></td>
+                </tr>
+              </tbody>
+            </table>
+            </div>
+          </div>
+
+          <!-- ── EXPENSES TABLE ── -->
+          <div style="margin-bottom:26px;">
+            <div style="font-family:var(--font-ui);font-size:0.72rem;letter-spacing:0.14em;text-transform:uppercase;color:var(--red-dark);padding-bottom:7px;border-bottom:2px solid var(--red);margin-bottom:12px;">EXPENSES — DÉPENSES</div>
+            <div style="overflow-x:auto;">
+            <table class="data-table" style="font-size:0.86rem;">
+              <thead><tr><th>#</th><th>Category</th><th style="color:#888;font-size:0.6rem;">አማርኛ / Français</th><th>Budgeted</th><th style="text-align:right;">Actual</th><th style="text-align:right;">Variance</th></tr></thead>
+              <tbody>
+                <tr><td class="mono">E-01</td><td>Church Rent / Facility</td><td style="font-size:0.76rem;color:#999;">የቤት ኪራይ · Loyer</td><td class="mono">$800.00</td><td class="mono" style="text-align:right;color:var(--red);" id="rpt-e01-act">$800.00</td><td class="mono" style="text-align:right;color:#888;">$0.00</td></tr>
+                <tr><td class="mono">E-02</td><td>Utilities (Electricity, Internet)</td><td style="font-size:0.76rem;color:#999;">መብራት · Services publics</td><td class="mono">$120.00</td><td class="mono" style="text-align:right;color:var(--red);" id="rpt-e02-act">$114.00</td><td class="mono" style="text-align:right;" id="rpt-e02-var"><span style="color:var(--green);">+$6.00</span></td></tr>
+                <tr><td class="mono">E-03</td><td>Liturgical Supplies (candles etc.)</td><td style="font-size:0.76rem;color:#999;">ቁሳቁስ · Fournitures liturgiques</td><td class="mono">$80.00</td><td class="mono" style="text-align:right;color:var(--red);" id="rpt-e03-act">$96.00</td><td class="mono" style="text-align:right;" id="rpt-e03-var"><span style="color:var(--red);">−$16.00</span></td></tr>
+                <tr><td class="mono">E-04</td><td>ሙዳየ ምጽዋት Disbursements</td><td style="font-size:0.76rem;color:#999;">ምጽዋት · Distributions</td><td class="mono">$150.00</td><td class="mono" style="text-align:right;color:var(--red);" id="rpt-e04-act">$200.00</td><td class="mono" style="text-align:right;" id="rpt-e04-var"><span style="color:var(--red);">−$50.00</span></td></tr>
+                <tr><td class="mono">E-05</td><td>Youth Program Expenses</td><td style="font-size:0.76rem;color:#999;">ወጣቶች · Programme jeunesse</td><td class="mono">$50.00</td><td class="mono" style="text-align:right;color:var(--red);" id="rpt-e05-act">$45.00</td><td class="mono" style="text-align:right;color:var(--green);">+$5.00</td></tr>
+                <tr><td class="mono">E-06</td><td>Website &amp; Technology</td><td style="font-size:0.76rem;color:#999;">ዌብሳይት · Technologie</td><td class="mono">$30.00</td><td class="mono" style="text-align:right;color:var(--red);" id="rpt-e06-act">$25.00</td><td class="mono" style="text-align:right;color:var(--green);">+$5.00</td></tr>
+                <tr style="background:#FEF2F2;border-top:2px solid #FECACA;">
+                  <td colspan="3" style="font-family:var(--font-ui);font-size:0.7rem;letter-spacing:0.1em;text-transform:uppercase;color:var(--red-dark);font-weight:700;">TOTAL EXPENSES</td>
+                  <td class="mono" style="font-weight:700;">$1,230.00</td>
+                  <td class="mono" style="text-align:right;font-weight:800;font-size:1rem;color:var(--red);" id="rpt-exp-total-act">$1,280.00</td>
+                  <td class="mono" style="text-align:right;" id="rpt-exp-total-var"><span style="color:var(--red);">−$50.00</span></td>
+                </tr>
+              </tbody>
+            </table>
+            </div>
+          </div>
+
+          <!-- ── NET SUMMARY BOXES ── -->
+          <div style="background:linear-gradient(135deg,var(--green-pale),#fff);border:1px solid rgba(27,122,62,0.2);border-radius:6px;padding:22px 26px;margin-bottom:24px;">
+            <div style="font-family:var(--font-ui);font-size:0.7rem;letter-spacing:0.14em;text-transform:uppercase;color:var(--green-dark);margin-bottom:16px;">NET SUMMARY — RÉSUMÉ NET · ማጠቃለያ</div>
+            <div style="display:grid;grid-template-columns:repeat(auto-fit,minmax(140px,1fr));gap:12px;">
+              <div style="text-align:center;padding:14px 10px;background:#fff;border:1px solid rgba(27,122,62,0.2);border-radius:4px;">
+                <div style="font-size:0.65rem;color:#888;font-family:var(--font-ui);letter-spacing:0.1em;text-transform:uppercase;margin-bottom:6px;">Total Income</div>
+                <div style="font-family:var(--font-ui);font-size:1.4rem;color:var(--green);" id="rpt-sum-inc">$2,415.00</div>
+              </div>
+              <div style="text-align:center;padding:14px 10px;background:#fff;border:1px solid rgba(192,57,43,0.2);border-radius:4px;">
+                <div style="font-size:0.65rem;color:#888;font-family:var(--font-ui);letter-spacing:0.1em;text-transform:uppercase;margin-bottom:6px;">Total Expenses</div>
+                <div style="font-family:var(--font-ui);font-size:1.4rem;color:var(--red);" id="rpt-sum-exp">$1,280.00</div>
+              </div>
+              <div style="text-align:center;padding:14px 10px;background:#fff;border:2px solid var(--green);border-radius:4px;">
+                <div style="font-size:0.65rem;color:#888;font-family:var(--font-ui);letter-spacing:0.1em;text-transform:uppercase;margin-bottom:6px;">Net Surplus / Deficit</div>
+                <div style="font-family:var(--font-ui);font-size:1.6rem;" id="rpt-sum-net">+$1,135.00</div>
+              </div>
+              <div style="text-align:center;padding:14px 10px;background:#fff;border:1px solid rgba(245,196,0,0.3);border-radius:4px;">
+                <div style="font-size:0.65rem;color:#888;font-family:var(--font-ui);letter-spacing:0.1em;text-transform:uppercase;margin-bottom:6px;">Opening Balance</div>
+                <div style="font-family:var(--font-ui);font-size:1.4rem;color:#B8860B;" id="rpt-sum-open">$3,200.00</div>
+              </div>
+              <div style="text-align:center;padding:14px 10px;background:#fff;border:2px solid var(--yellow);border-radius:4px;">
+                <div style="font-size:0.65rem;color:#888;font-family:var(--font-ui);letter-spacing:0.1em;text-transform:uppercase;margin-bottom:6px;">Closing Balance</div>
+                <div style="font-family:var(--font-ui);font-size:1.7rem;color:#B8860B;" id="rpt-sum-close">$4,335.00</div>
+              </div>
+            </div>
+          </div>
+
+          <!-- Signature Lines -->
+          <div style="display:grid;grid-template-columns:1fr 1fr 1fr;gap:24px;padding-top:20px;border-top:1px solid #EEF3F0;">
+            <div style="text-align:center;"><div style="height:44px;border-bottom:1px solid #555;margin-bottom:7px;"></div><div style="font-size:0.68rem;color:#888;font-family:var(--font-ui);letter-spacing:0.08em;text-transform:uppercase;">Parish Treasurer</div></div>
+            <div style="text-align:center;"><div style="height:44px;border-bottom:1px solid #555;margin-bottom:7px;"></div><div style="font-size:0.68rem;color:#888;font-family:var(--font-ui);letter-spacing:0.08em;text-transform:uppercase;">Parish Priest</div></div>
+            <div style="text-align:center;"><div style="height:44px;border-bottom:1px solid #555;margin-bottom:7px;"></div><div style="font-size:0.68rem;color:#888;font-family:var(--font-ui);letter-spacing:0.08em;text-transform:uppercase;">Church Council Chair</div></div>
+          </div>
+          <div style="text-align:center;margin-top:16px;font-size:0.7rem;color:#ccc;font-style:italic;">✞ Medhanealem Ethiopian Orthodox Tewahedo Church · Montréal, Canada</div>
+        </div>
+      </div>
+    </div>
+    <!-- ═══ ቃለ ጉባዔ — MEETING MINUTES ARCHIVE ═══ -->
+    <div id="page-minutes" class="page">
+
+      <!-- Banner -->
+      <div style="background:linear-gradient(135deg,#1E3A5F,#0F2340);border-radius:6px;padding:22px 28px;margin-bottom:22px;color:#fff;border:1px solid rgba(59,130,246,0.3);display:flex;align-items:flex-start;gap:16px;flex-wrap:wrap;">
+        <div style="font-size:2.4rem;">📋</div>
+        <div>
+          <h3 style="font-family:var(--font-ui);font-size:0.95rem;letter-spacing:0.12em;text-transform:uppercase;color:#93C5FD;margin-bottom:6px;">ቃለ ጉባዔ — Procès-verbaux — Meeting Minutes</h3>
+          <p style="font-size:0.88rem;color:rgba(255,255,255,0.75);line-height:1.7;max-width:700px;">Official archive of all church council meetings, general assemblies, and special sessions. All minutes are recorded in Amharic and/or French, signed by the secretary, and approved by the council chair.</p>
+        </div>
+      </div>
+
+      <!-- Stats -->
+      <div class="stat-grid" style="margin-bottom:22px;">
+        <div class="stat-card"><div class="stat-label">Total Records</div><div class="stat-value" id="minutes-count">6</div><div class="stat-sub">Since 2024</div><div class="stat-icon">📋</div></div>
+        <div class="stat-card blue"><div class="stat-label">Approved</div><div class="stat-value">5</div><div class="stat-sub">Finalized records</div><div class="stat-icon">✅</div></div>
+        <div class="stat-card yellow"><div class="stat-label">Drafts</div><div class="stat-value">1</div><div class="stat-sub">Pending approval</div><div class="stat-icon">✏️</div></div>
+        <div class="stat-card"><div class="stat-label">Last Meeting</div><div class="stat-value" style="font-size:1.1rem;">Mar 15</div><div class="stat-sub">Council · 2025</div><div class="stat-icon">📅</div></div>
+      </div>
+
+      <div class="two-col">
+        <div style="grid-column:1/-1;">
+          <div class="card">
+            <div class="card-header">
+              <h3>📋 Minutes Archive — ቃለ ጉባዔ ማህደር</h3>
+              <div style="display:flex;gap:8px;flex-wrap:wrap;">
+                <button class="topbar-btn primary" onclick="openModal('modal-add-minutes')">+ Add Minutes</button>
+                <button class="topbar-btn" onclick="showToast('Exporting archive to PDF 📄')">📄 Export All</button>
+              </div>
+            </div>
+            <div class="card-body">
+              <!-- Filters -->
+              <div class="search-bar">
+                <input class="search-input" type="text" placeholder="Search by title, date, summary..." oninput="renderMinutes(this.value)">
+                <select class="filter-select" onchange="renderMinutes(this.value)">
+                  <option value="all">All Types</option>
+                  <option value="general">General Assembly</option>
+                  <option value="council">Council Meeting</option>
+                  <option value="emergency">Emergency Session</option>
+                  <option value="draft">Drafts Only</option>
+                </select>
+                <select class="filter-select">
+                  <option>All Years</option>
+                  <option>2025</option>
+                  <option>2024</option>
+                  <option>2023</option>
+                </select>
+              </div>
+
+              <div style="overflow-x:auto;">
+                <table class="data-table">
+                  <thead>
+                    <tr>
+                      <th>Date</th>
+                      <th>Title — ርዕስ</th>
+                      <th>Type</th>
+                      <th>Attendance</th>
+                      <th>Status</th>
+                      <th>Actions</th>
+                    </tr>
+                  </thead>
+                  <tbody id="minutes-tbody">
+                    <!-- populated by renderMinutes() -->
+                  </tbody>
+                </table>
+              </div>
+
+              <!-- Legend -->
+              <div style="margin-top:14px;display:flex;gap:12px;flex-wrap:wrap;font-size:0.78rem;color:#888;align-items:center;padding-top:10px;border-top:1px solid #EEF3F0;">
+                <span>Meeting Types:</span>
+                <span class="badge badge-blue">General Assembly</span>
+                <span class="badge badge-green">Council Meeting</span>
+                <span class="badge badge-red">Emergency Session</span>
+              </div>
+            </div>
+          </div>
+        </div>
+      </div>
+
+      <!-- How-to note -->
+      <div style="background:var(--yellow-pale);border:1px solid rgba(245,196,0,0.35);border-radius:6px;padding:18px 22px;margin-top:4px;">
+        <div style="font-family:var(--font-ui);font-size:0.7rem;letter-spacing:0.12em;text-transform:uppercase;color:#B8860B;margin-bottom:8px;">📌 Record-Keeping Guidelines</div>
+        <div style="display:grid;grid-template-columns:repeat(auto-fit,minmax(220px,1fr));gap:10px;font-size:0.85rem;color:#666;line-height:1.6;">
+          <div>✦ Minutes must be recorded within 7 days of each meeting</div>
+          <div>✦ Must include date, attendees, agenda items, and decisions made</div>
+          <div>✦ Draft minutes must be approved by council chair before archiving</div>
+          <div>✦ PDF copies should be attached for the official permanent record</div>
+        </div>
+      </div>
+    </div>
+
+    <!-- ═══ LIVE STREAM ═══ -->
+    <div id="page-livestream" class="page">
+      <div class="stream-control" id="stream-control">
+        <div class="stream-info">
+          <h3>📡 Live Kidase Stream Control</h3>
+          <p>Control the Sunday Divine Liturgy live broadcast for remote members.</p>
+          <div class="stream-status">
+            <div class="stream-dot-off" id="stream-dot"></div>
+            <span id="stream-status-text" style="color:rgba(255,255,255,0.5);">OFFLINE — Not broadcasting</span>
+          </div>
+        </div>
+        <div class="stream-actions">
+          <button class="btn-golive" id="go-live-btn" onclick="toggleStream()"><span id="stream-btn-icon">🔴</span><span id="stream-btn-text">Go Live</span></button>
+          <button class="btn-outline-white" onclick="showToast('Opening stream settings ⚙️')">⚙ Settings</button>
+        </div>
+      </div>
+
+      <div class="two-col">
+        <div>
+          <div class="card">
+            <div class="card-header"><h3>Stream Configuration</h3></div>
+            <div class="card-body">
+              <div style="display:flex;flex-direction:column;gap:13px;">
+                <div class="form-field"><label>Stream Platform</label><select><option>YouTube Live</option><option>Zoom Webinar</option><option>Facebook Live</option><option>Custom RTMP</option></select></div>
+                <div class="form-field"><label>Stream URL / Embed Code</label><input type="text" placeholder="https://youtube.com/embed/live_stream?channel=..."></div>
+                <div class="form-field"><label>Stream Key (keep secret)</label><input type="password" placeholder="••••••••••••••••"></div>
+                <div class="form-field"><label>Access Level</label><select><option>Registered Members Only</option><option>All Visitors (Public)</option><option>Invite Only</option></select></div>
+                <div class="form-actions"><button class="btn-save" onclick="showToast('Stream settings saved ✅')">Save Settings</button></div>
+              </div>
+            </div>
+          </div>
+        </div>
+        <div>
+          <div class="card">
+            <div class="card-header"><h3>Connected Viewers</h3></div>
+            <div class="card-body">
+              <div style="text-align:center;padding:16px 0;">
+                <div style="font-family:var(--font-ui);font-size:3rem;color:var(--green-dark);" id="viewer-count">0</div>
+                <div style="font-size:0.8rem;color:#aaa;margin-top:4px;">members connected</div>
+              </div>
+              <div style="display:flex;flex-direction:column;gap:7px;margin-top:12px;" id="viewer-list">
+                <div style="text-align:center;font-size:0.85rem;color:#ccc;font-style:italic;">Stream is offline. Viewers will appear here when live.</div>
+              </div>
+            </div>
+          </div>
+          <div class="card" style="margin-top:0;">
+            <div class="card-header"><h3>Stream Schedule</h3></div>
+            <div class="card-body">
+              <ul class="sched-list" style="list-style:none;display:flex;flex-direction:column;gap:7px;">
+                <li style="display:flex;justify-content:space-between;padding:7px 0;border-bottom:1px solid #F0F4F1;font-size:0.86rem;"><span style="color:var(--green);font-family:var(--font-ui);font-size:0.72rem;">Sunday</span><span>7:00 AM — Kidase 🔴</span></li>
+                <li style="display:flex;justify-content:space-between;padding:7px 0;border-bottom:1px solid #F0F4F1;font-size:0.86rem;"><span style="color:var(--green);font-family:var(--font-ui);font-size:0.72rem;">Wednesday</span><span>6:30 PM — Evening Prayer</span></li>
+                <li style="display:flex;justify-content:space-between;padding:7px 0;font-size:0.86rem;"><span style="color:var(--green);font-family:var(--font-ui);font-size:0.72rem;">Special</span><span>Feast Days (as scheduled)</span></li>
+              </ul>
+            </div>
+          </div>
+        </div>
+      </div>
+    </div>
+
+    <!-- ═══ SETTINGS ═══ -->
+    <div id="page-settings" class="page">
+      <div class="two-col">
+        <div>
+          <div class="card">
+            <div class="card-header"><h3>Church Information</h3></div>
+            <div class="card-body">
+              <div style="display:flex;flex-direction:column;gap:12px;">
+                <div class="form-field"><label>Church Name (English)</label><input type="text" value="Ethiopian Orthodox Tewahedo Medhanealem Church"></div>
+                <div class="form-field"><label>Church Name (French)</label><input type="text" value="Église Éthiopienne Orthodoxe Tewahedo Medhanealem"></div>
+                <div class="form-field"><label>Church Name (Amharic)</label><input type="text" value="መድኃኔዓለም ቤተ-ክርስቲያን"></div>
+                <div class="form-field"><label>Address</label><input type="text" placeholder="Full church address, Montréal, QC"></div>
+                <div class="form-field"><label>Phone</label><input type="tel" placeholder="(514) 000-0000"></div>
+                <div class="form-field"><label>Email</label><input type="email" value="info@medhanealemmontreal.ca"></div>
+                <div class="form-actions"><button class="btn-save" onclick="showToast('Church info saved ✅')">Save Changes</button></div>
+              </div>
+            </div>
+          </div>
+        </div>
+        <div>
+          <div class="card">
+            <div class="card-header"><h3>Admin Accounts</h3><button class="topbar-btn primary" onclick="showToast('Adding new admin ➕')">+ Add Admin</button></div>
+            <div class="card-body">
+              <table class="data-table">
+                <thead><tr><th>Name</th><th>Role</th><th>Status</th><th>Actions</th></tr></thead>
+                <tbody>
+                  <tr><td><strong>Head Admin</strong></td><td><span class="badge badge-red">Super Admin</span></td><td><span class="badge badge-green">Active</span></td><td><button class="btn-icon" onclick="showToast('Editing admin ✏️')">Edit</button></td></tr>
+                  <tr><td><strong>Parish Secretary</strong></td><td><span class="badge badge-blue">Editor</span></td><td><span class="badge badge-green">Active</span></td><td><button class="btn-icon" onclick="showToast('Editing admin ✏️')">Edit</button></td></tr>
+                  <tr><td><strong>Youth Coordinator</strong></td><td><span class="badge badge-green">Moderator</span></td><td><span class="badge badge-green">Active</span></td><td><button class="btn-icon" onclick="showToast('Editing admin ✏️')">Edit</button></td></tr>
+                </tbody>
+              </table>
+            </div>
+          </div>
+          <div class="card">
+            <div class="card-header"><h3>Change Password</h3></div>
+            <div class="card-body">
+              <div style="display:flex;flex-direction:column;gap:11px;">
+                <div class="form-field"><label>Current Password</label><input type="password" placeholder="••••••••"></div>
+                <div class="form-field"><label>New Password</label><input type="password" placeholder="••••••••"></div>
+                <div class="form-field"><label>Confirm New Password</label><input type="password" placeholder="••••••••"></div>
+                <div class="form-actions"><button class="btn-save" onclick="showToast('Password updated ✅')">Update Password</button></div>
+              </div>
+            </div>
+          </div>
+        </div>
+      </div>
+    </div>
+
+  </main>
+</div>
+
+<!-- ══════════ MODALS ══════════ -->
+<div class="modal-overlay" id="modal-add-member">
+  <div class="modal">
+    <div class="modal-header"><h3>Add New Member</h3><button class="modal-close" onclick="closeModal('modal-add-member')">✕</button></div>
+    <div class="modal-body">
+      <div class="form-grid">
+        <div class="form-field"><label>First Name</label><input type="text" placeholder="First name"></div>
+        <div class="form-field"><label>Last Name</label><input type="text" placeholder="Last name"></div>
+        <div class="form-field"><label>Email</label><input type="email" placeholder="email@example.com"></div>
+        <div class="form-field"><label>Phone</label><input type="tel" placeholder="(514) 000-0000"></div>
+        <div class="form-field"><label>Role</label><select><option>Member</option><option>Deacon</option><option>Priest</option></select></div>
+        <div class="form-field"><label>Live Portal Access</label><select><option>No Access</option><option>Approved</option></select></div>
+      </div>
+    </div>
+    <div class="modal-footer"><button class="btn-cancel" onclick="closeModal('modal-add-member')">Cancel</button><button class="btn-save" onclick="closeModal('modal-add-member');showToast('Member added successfully ✅')">Add Member</button></div>
+  </div>
+</div>
+
+<div class="modal-overlay" id="modal-add-event">
+  <div class="modal">
+    <div class="modal-header"><h3>Add New Event</h3><button class="modal-close" onclick="closeModal('modal-add-event')">✕</button></div>
+    <div class="modal-body">
+      <div class="form-grid">
+        <div class="form-field"><label>Event Name (EN)</label><input type="text" placeholder="Event name in English"></div>
+        <div class="form-field"><label>Event Name (Amharic)</label><input type="text" placeholder="ዝግጅት ስም"></div>
+        <div class="form-field"><label>Date</label><input type="date"></div>
+        <div class="form-field"><label>Type</label><select><option>Holy Day</option><option>Community</option><option>Youth</option></select></div>
+        <div class="form-field" style="grid-column:1/-1"><label>Description</label><textarea placeholder="Event description..."></textarea></div>
+      </div>
+    </div>
+    <div class="modal-footer"><button class="btn-cancel" onclick="closeModal('modal-add-event')">Cancel</button><button class="btn-save" onclick="closeModal('modal-add-event');showToast('Event created ✅')">Create Event</button></div>
+  </div>
+</div>
+
+<div class="modal-overlay" id="modal-upload-sermon">
+  <div class="modal">
+    <div class="modal-header"><h3>Upload Sermon</h3><button class="modal-close" onclick="closeModal('modal-upload-sermon')">✕</button></div>
+    <div class="modal-body">
+      <div class="upload-zone" onclick="showToast('File browser opened 📂')" style="margin-bottom:16px;"><span class="upload-icon">🎙️</span><p><strong>Click to select audio/video file</strong></p><p>MP3, MP4 · Max 500MB</p></div>
+      <div class="form-grid">
+        <div class="form-field"><label>Title</label><input type="text" placeholder="Sermon title"></div>
+        <div class="form-field"><label>Speaker</label><input type="text" placeholder="Priest / Deacon name"></div>
+        <div class="form-field"><label>Language</label><select><option>Amharic</option><option>Ge'ez</option><option>French</option><option>English</option></select></div>
+        <div class="form-field"><label>Date</label><input type="date"></div>
+      </div>
+    </div>
+    <div class="modal-footer"><button class="btn-cancel" onclick="closeModal('modal-upload-sermon')">Cancel</button><button class="btn-save" onclick="closeModal('modal-upload-sermon');showToast('Sermon uploaded 🎙️')">Upload</button></div>
+  </div>
+</div>
+
+
+<!-- MODAL: Add Meeting Minutes -->
+<div class="modal-overlay" id="modal-add-minutes">
+  <div class="modal" style="max-width:620px;">
+    <div class="modal-header">
+      <h3>📋 Add Meeting Minutes — ቃለ ጉባዔ</h3>
+      <button class="modal-close" onclick="closeModal('modal-add-minutes')">✕</button>
+    </div>
+    <div class="modal-body">
+      <div class="form-grid">
+        <div class="form-field">
+          <label>Meeting Title (English / Amharic)</label>
+          <input type="text" id="min-title" placeholder="e.g. March Council Meeting / የማርች ጉባዔ">
+        </div>
+        <div class="form-field">
+          <label>Meeting Date</label>
+          <input type="date" id="min-date">
+        </div>
+        <div class="form-field">
+          <label>Meeting Type</label>
+          <select id="min-type">
+            <option value="council">Council Meeting</option>
+            <option value="general">General Assembly</option>
+            <option value="emergency">Emergency Session</option>
+            <option value="special">Special Committee</option>
+          </select>
+        </div>
+        <div class="form-field">
+          <label>Number of Attendees</label>
+          <input type="number" id="min-attendees" placeholder="e.g. 12">
+        </div>
+        <div class="form-field" style="grid-column:1/-1;">
+          <label>Meeting Summary / Key Decisions — ዋና ዋና ውሳኔዎች</label>
+          <textarea id="min-summary" placeholder="Summarize key agenda items, discussions, and decisions made..." style="min-height:110px;"></textarea>
+        </div>
+        <div class="form-field" style="grid-column:1/-1;">
+          <label>Language(s) of Record</label>
+          <select>
+            <option>Amharic (አማርኛ)</option>
+            <option>French (Français)</option>
+            <option>Amharic + French</option>
+            <option>English</option>
+          </select>
+        </div>
+        <div class="form-field" style="grid-column:1/-1;">
+          <label>Attach PDF (optional)</label>
+          <div class="upload-zone" onclick="showToast('File browser opened 📂')" style="padding:20px;">
+            <span style="font-size:1.5rem;display:block;margin-bottom:6px;">📄</span>
+            <p><strong>Click to upload</strong> signed PDF minutes</p>
+            <p style="font-size:0.75rem;">PDF · Max 10MB</p>
+          </div>
+        </div>
+        <div class="form-field" style="grid-column:1/-1;">
+          <label>Recorded By (Secretary)</label>
+          <input type="text" placeholder="Name of church secretary">
+        </div>
+        <div class="form-field" style="grid-column:1/-1;">
+          <label>Approved By (Council Chair)</label>
+          <input type="text" placeholder="Name of council chair">
+        </div>
+      </div>
+    </div>
+    <div class="modal-footer">
+      <button class="btn-cancel" onclick="closeModal('modal-add-minutes')">Cancel</button>
+      <button class="btn-save" style="background:var(--blue);" onclick="saveNewMinutes()">💾 Save as Draft</button>
+      <button class="btn-save" onclick="saveNewMinutes();showToast('Minutes approved &amp; archived ✅')">✅ Save &amp; Approve</button>
+    </div>
+  </div>
+</div>
+
+<!-- MODAL: View Minutes Detail -->
+<div class="modal-overlay" id="modal-minutes-detail">
+  <div class="modal" style="max-width:560px;">
+    <div class="modal-header">
+      <h3 id="modal-minutes-title">Meeting Minutes</h3>
+      <button class="modal-close" onclick="closeModal('modal-minutes-detail')">✕</button>
+    </div>
+    <div class="modal-body" id="modal-minutes-body">
+    </div>
+    <div class="modal-footer">
+      <button class="btn-cancel" onclick="closeModal('modal-minutes-detail')">Close</button>
+      <button class="btn-save" onclick="showToast('Downloading PDF 📄')">📄 Download PDF</button>
+    </div>
+  </div>
+</div>
+
+<!-- TOAST CONTAINER -->
+<div class="toast-container" id="toast-container"></div>
+
+<!--
+  ╔══════════════════════════════════════════════════════════════╗
+  ║     FIREBASE CONFIG — same project as church-website.html   ║
+  ║     Paste the same values from your Firebase console        ║
+  ╚══════════════════════════════════════════════════════════════╝
+-->
+<script src="https://www.gstatic.com/firebasejs/10.12.0/firebase-app-compat.js"></script>
+<script src="https://www.gstatic.com/firebasejs/10.12.0/firebase-auth-compat.js"></script>
+<script src="https://www.gstatic.com/firebasejs/10.12.0/firebase-firestore-compat.js"></script>
+
+
+<script>
+/* ══════════════════════════════════════════════════════
+   FIREBASE CONFIG
+   ── To activate: ──────────────────────────────────────
+   1. Go to console.firebase.google.com
+   2. Create project → Add Web App → copy config values
+   3. Replace all PASTE_YOUR_... below with real values
+   4. Host via HTTP (NOT file://) using one of:
+      a) Firebase Hosting:       firebase deploy
+      b) Quick local test:       npx serve .
+      c) VS Code Live Server extension (right-click HTML)
+   ══════════════════════════════════════════════════════ */
+var firebaseConfig = {
+  apiKey:            "AIzaSyDuj3MlFMJVxPrL0DX3Iu1_BMmwtZc6l5Y",
+  authDomain:        "medhanalem-4b09a.firebaseapp.com",
+  projectId:         "medhanalem-4b09a",
+  storageBucket:     "medhanalem-4b09a.firebasestorage.app",
+  messagingSenderId: "256874292293",
+  appId:             "1:256874292293:web:2cb98294897ee1266baf2c"
+};
+
+var db   = null;
+var auth = null;
+var FIREBASE_READY = false;
+
+(function initFirebase() {
+  try {
+    if (typeof firebase === 'undefined') {
+      console.warn('Firebase SDK not loaded. Open via HTTP server (not file://) to enable live database.');
+      showFirebaseBanner(); return;
+    }
+    if (firebaseConfig.apiKey === 'PASTE_YOUR_API_KEY_HERE') {
+      console.warn('Paste your Firebase project values into the config above.');
+      showFirebaseBanner(); return;
+    }
+    if (!firebase.apps.length) firebase.initializeApp(firebaseConfig);
+    db   = firebase.firestore();
+    auth = firebase.auth();
+    FIREBASE_READY = true;
+    console.log('✞ Firebase connected — Medhanealem EOTC');
+  } catch(e) {
+    console.warn('Firebase init error:', e.message);
+    showFirebaseBanner();
+  }
+})();
+
+function showFirebaseBanner() {
+  var el = document.getElementById('firebase-banner');
+  if (el) el.style.display = 'flex';
+}
+
+/* ── Safe wrappers: all Firebase calls silently no-op if SDK unavailable ── */
+function fbAdd(col, data)      { if (!db) return Promise.resolve({id:'local-'+Date.now()}); return db.collection(col).add({...data, ts: firebase.firestore.FieldValue.serverTimestamp()}); }
+function fbSet(col, id, data)  { if (!db) return Promise.resolve(); return db.collection(col).doc(id).set(data, {merge:true}); }
+function fbUpdate(col, id, d)  { if (!db) return Promise.resolve(); return db.collection(col).doc(id).update(d); }
+function fbGet(col, id)        { if (!db) return Promise.resolve({exists:false, data:()=>({})}); return db.collection(col).doc(id).get(); }
+function fbListen(query, cb)   { if (!db) { cb([]); return ()=>{}; } return query.onSnapshot(s=>cb(s.docs), e=>{ console.warn(e); cb([]); }); }
+function fbDocListen(col,id,cb){ if (!db) { cb(null); return ()=>{}; } return db.collection(col).doc(id).onSnapshot(cb, ()=>cb(null)); }
+function fbTS()                { return FIREBASE_READY ? firebase.firestore.FieldValue.serverTimestamp() : new Date(); }
+
+/* ══════════════════════════════
+   LOGIN
+   ══════════════════════════════ */
+function doAdminLogin(){
+  const email = document.getElementById('admin-email').value;
+  const pass  = document.getElementById('admin-pass').value;
+  if(!email||!pass){ showToast('Please enter credentials','❌',true); return; }
+
+  const btn = document.querySelector('.login-btn');
+  if(btn){ btn.textContent='Signing in...'; btn.disabled=true; }
+
+  /* ── Firebase Auth: sign in ── */
+  (FIREBASE_READY ? auth.signInWithEmailAndPassword(email.trim(), pass) : Promise.reject({code:'auth/no-sdk', message:'Firebase not configured — see banner'}))
+    .then(cred => {
+      /* ── Check admin role in Firestore ── */
+      return db.collection('members').doc(cred.user.uid).get()
+        .then(doc => {
+          if(btn){ btn.textContent='Sign In'; btn.disabled=false; }
+          if(doc.exists && (doc.data().role === 'admin' || doc.data().role === 'treasurer')) {
+            enterAdminApp(doc.data().displayName || email.split('@')[0], doc.data().role);
+          } else {
+            showToast('Access denied — admin role required','❌',true);
+            auth.signOut();
+          }
+        });
+    })
+    .catch(err => {
+      if(btn){ btn.textContent='Sign In'; btn.disabled=false; }
+      const msg = err.code==='auth/wrong-password'||err.code==='auth/user-not-found'
+        ? 'Invalid email or password.' : err.message;
+      showToast('❌ '+msg,'❌',true);
+    });
+}
+
+function enterAdminApp(name, role){
+  document.getElementById('login-screen').style.display='none';
+  document.getElementById('app').style.display='block';
+  document.getElementById('admin-name-display').textContent = name + (role==='treasurer'?' (Treasurer)':'');
+  document.getElementById('admin-av').textContent = name[0].toUpperCase();
+  showToast('Welcome back, '+name+' 🙏');
+  setTimeout(()=>{ generateReport(); drawBarChart(); loadDashboardStats(); }, 400);
+  /* Start real-time listeners */
+  if(FIREBASE_READY){ listenToMembers(); listenToMinutes(); listenToPrayerRequests(); }
+}
+function doLogout(){
+  (FIREBASE_READY ? auth.signOut() : Promise.resolve()).then(()=>{
+    document.getElementById('app').style.display='none';
+    document.getElementById('login-screen').style.display='flex';
+    showToast('Signed out. God bless. ✞');
+  });
+}
+
+/* ══════════════════════════════
+   NAVIGATION
+   ══════════════════════════════ */
+function showPage(pageId, el){
+  document.querySelectorAll('.page').forEach(p=>p.classList.remove('active'));
+  document.querySelectorAll('.nav-item').forEach(n=>n.classList.remove('active'));
+  const pg = document.getElementById('page-'+pageId);
+  if(pg) pg.classList.add('active');
+  if(el) el.classList.add('active');
+  const titles={
+    dashboard:'Dashboard', members:'Members', prayer:'Prayer Requests',
+    contact:'Messages', events:'Events', sermons:'Sermons',
+    gallery:'Gallery', announcements:'Announcements',
+    finance:'Financial Overview', contributions:'Member Contributions',
+    mudaye:'ሙዳየ ምጽዋት — Alms Box', donations:'Online Donations',
+    report:'Monthly Financial Report', minutes:'ቃለ ጉባዔ — Meeting Minutes',
+    livestream:'Live Stream', settings:'Settings'
+  };
+  document.getElementById('topbar-title').textContent = titles[pageId]||pageId;
+  if(pageId==='finance') setTimeout(drawBarChart, 80);
+  if(pageId==='report')  setTimeout(generateReport, 80);
+  if(window.innerWidth<768) document.getElementById('sidebar').classList.remove('open');
+}
+function toggleSidebar(){
+  document.getElementById('sidebar').classList.toggle('open');
+}
+
+/* ══════════════════════════════
+   TABS
+   ══════════════════════════════ */
+function switchTab(section, tab, btn){
+  const container = btn.closest('.card-body') || btn.closest('.page');
+  if(container){
+    container.querySelectorAll('.tab-btn').forEach(b=>b.classList.remove('active'));
+    container.querySelectorAll('.tab-panel').forEach(p=>p.classList.remove('active'));
+  }
+  btn.classList.add('active');
+  const panel = document.getElementById('tab-'+section+'-'+tab);
+  if(panel) panel.classList.add('active');
+}
+
+/* ══════════════════════════════
+   MODALS
+   ══════════════════════════════ */
+function openModal(id){ document.getElementById(id).classList.add('open'); }
+function closeModal(id){ document.getElementById(id).classList.remove('open'); }
+document.querySelectorAll('.modal-overlay').forEach(m=>{
+  m.addEventListener('click', e=>{ if(e.target===m) m.classList.remove('open'); });
+});
+
+/* ══════════════════════════════
+   TOAST
+   ══════════════════════════════ */
+function showToast(msg, icon, isError){
+  const c = document.getElementById('toast-container');
+  const t = document.createElement('div');
+  t.className = 'toast' + (isError ? ' error' : '');
+  t.innerHTML = (icon||'✞') + ' ' + msg;
+  c.appendChild(t);
+  setTimeout(()=>t.classList.add('show'), 10);
+  setTimeout(()=>{ t.classList.remove('show'); setTimeout(()=>t.remove(), 400); }, 3200);
+}
+function showToastGlobal(msg,icon,err){ showToast(msg,icon,err); }
+
+/* ══════════════════════════════
+   APPROVE MEMBER
+   ══════════════════════════════ */
+function approveUser(name){
+  showToast(name + ' approved for Live Kidase ✅');
+  const badge = document.getElementById('badge-members');
+  if(badge){ const n=parseInt(badge.textContent)-1; badge.textContent=n; if(n<=0) badge.remove(); }
+}
+
+/* ══════════════════════════════
+   LIVE STREAM
+   ══════════════════════════════ */
+let isLive = false;
+const viewers = ['Marie T.','Yohannes K.','Dawit A.','Haile B.','Sophie M.','Almaz G.','Tigist W.','Samuel T.'];
+function toggleStream(){
+  isLive = !isLive;
+
+  /* ── Write isLive to Firestore → public site updates instantly ── */
+  fbSet('settings','stream',{
+    isLive:    isLive,
+    startedAt: isLive ? firebase.firestore.FieldValue.serverTimestamp() : null,
+    startedBy: document.getElementById('admin-name-display').textContent || 'Admin'
+  }).then(()=> showToast(FIREBASE_READY ? (isLive ? '🔴 Stream LIVE — public site updated!' : 'Stream ended ✅') : '⚠ Demo mode — Firebase not active')).catch(err=> showToast('Firestore error: '+err.message,'❌',true));
+
+  const dot     = document.getElementById('stream-dot');
+  const status  = document.getElementById('stream-status-text');
+  const btn     = document.getElementById('go-live-btn');
+  const btnIcon = document.getElementById('stream-btn-icon');
+  const btnText = document.getElementById('stream-btn-text');
+  const vcount  = document.getElementById('viewer-count');
+  const vlist   = document.getElementById('viewer-list');
+  if(isLive){
+    dot.className = 'stream-dot-on';
+    status.textContent = '🔴 LIVE — Broadcasting now';
+    status.style.color = '#ff6b6b';
+    btn.classList.add('stop');
+    btnIcon.textContent = '⏹';
+    btnText.textContent = 'Stop Stream';
+    const count = Math.floor(Math.random()*6)+4;
+    vcount.textContent = count;
+    vlist.innerHTML = viewers.slice(0,count).map(v=>
+      `<div style="display:flex;align-items:center;gap:8px;padding:5px 0;border-bottom:1px solid #F0F4F1;font-size:0.84rem;">
+        <div style="width:7px;height:7px;background:var(--green);border-radius:50%;flex-shrink:0;"></div>${v}
+      </div>`).join('');
+    showToast('🔴 Live started! ' + count + ' members connected');
+  } else {
+    dot.className = 'stream-dot-off';
+    status.textContent = 'OFFLINE — Not broadcasting';
+    status.style.color = 'rgba(255,255,255,0.5)';
+    btn.classList.remove('stop');
+    btnIcon.textContent = '🔴';
+    btnText.textContent = 'Go Live';
+    vcount.textContent = '0';
+    vlist.innerHTML = '<div style="text-align:center;font-size:0.85rem;color:#ccc;font-style:italic;">Stream is offline.</div>';
+    showToast('Stream ended. Recording saved ✅');
+  }
+}
+
+/* ══════════════════════════════
+   BAR CHART — Financial Overview
+   ══════════════════════════════ */
+const monthlyFinData = {
+  labels:   ['Jan','Feb','Mar','Apr','May','Jun','Jul','Aug','Sep','Oct','Nov','Dec'],
+  income:   [1968, 2667, 2415, 0, 0, 0, 0, 0, 0, 0, 0, 0],
+  expenses: [1100, 1250, 1280, 0, 0, 0, 0, 0, 0, 0, 0, 0]
+};
+function drawBarChart(){
+  const chart = document.getElementById('bar-chart');
+  const lbCont = document.getElementById('bar-labels');
+  if(!chart || !lbCont) return;
+  chart.innerHTML = ''; lbCont.innerHTML = '';
+  const max = Math.max(...monthlyFinData.income, ...monthlyFinData.expenses, 100);
+  monthlyFinData.labels.forEach((m, i)=>{
+    const inc = monthlyFinData.income[i];
+    const exp = monthlyFinData.expenses[i];
+    const grp = document.createElement('div');
+    grp.style.cssText = 'flex:1;display:flex;flex-direction:column;align-items:center;gap:2px;min-width:0;';
+    if(inc > 0){
+      const hI = Math.max(4, Math.round((inc/max)*130));
+      const hE = Math.max(4, Math.round((exp/max)*130));
+      grp.innerHTML = `
+        <div style="display:flex;align-items:flex-end;gap:2px;width:100%;justify-content:center;">
+          <div style="flex:1;max-width:20px;height:${hI}px;background:var(--green);border-radius:2px 2px 0 0;opacity:0.85;cursor:pointer;"
+               onmouseover="showToast('Income: $${inc}','📈')" title="Income $${inc}"></div>
+          <div style="flex:1;max-width:20px;height:${hE}px;background:var(--red);border-radius:2px 2px 0 0;opacity:0.75;cursor:pointer;"
+               onmouseover="showToast('Expenses: $${exp}','📉')" title="Expenses $${exp}"></div>
+        </div>
+        <div style="font-size:0.58rem;color:#aaa;font-family:var(--font-mono);">$${(inc/1000).toFixed(1)}k</div>`;
+    } else {
+      grp.innerHTML = `<div style="height:6px;background:#EEF3F0;border-radius:2px;width:60%;margin:0 auto;margin-bottom:20px;"></div>`;
+    }
+    chart.appendChild(grp);
+    const lb = document.createElement('div');
+    lb.textContent = m;
+    lb.style.color = inc > 0 ? '#666' : '#ccc';
+    lbCont.appendChild(lb);
+  });
+}
+
+/* ══════════════════════════════
+   REPORT GENERATOR
+   ══════════════════════════════ */
+const _rdata = {
+  march:    { title:'MARCH 2025',    ref:'FR-2025-03', date:'March 31, 2025',    contrib:1420, mudaye:355, donations:640,  expRent:800, expUtil:114, expLit:96,  expAlms:200, expYouth:45, expTech:25,  opening:3200 },
+  february: { title:'FEBRUARY 2025', ref:'FR-2025-02', date:'February 28, 2025', contrib:1860, mudaye:290, donations:517,  expRent:800, expUtil:118, expLit:88,  expAlms:150, expYouth:50, expTech:44,  opening:2533 },
+  january:  { title:'JANUARY 2025',  ref:'FR-2025-01', date:'January 31, 2025',  contrib:1560, mudaye:148, donations:260,  expRent:800, expUtil:122, expLit:78,  expAlms:100, expYouth:0,  expTech:0,   opening:2865 }
+};
+function generateReport(){
+  const sel = document.getElementById('report-month');
+  if(!sel) return;
+  const d = _rdata[sel.value] || _rdata.march;
+  const totalInc = d.contrib + d.mudaye + d.donations;
+  const totalExp = d.expRent + d.expUtil + d.expLit + d.expAlms + d.expYouth + d.expTech;
+  const net = totalInc - totalExp;
+  const closing = d.opening + net;
+  const fmt = v => '$' + v.toLocaleString('en-CA',{minimumFractionDigits:2,maximumFractionDigits:2});
+  const diff = (actual, budget) => {
+    const v = actual - budget;
+    return `<span style="color:${v>=0?'var(--green)':'var(--red)'};">${v>=0?'+':''}${fmt(v)}</span>`;
+  };
+  function set(id, val){ const el=document.getElementById(id); if(el) el.textContent=val; }
+  function setHTML(id, val){ const el=document.getElementById(id); if(el) el.innerHTML=val; }
+
+  set('rpt-title',  'MONTHLY FINANCIAL REPORT — ' + d.title);
+  set('rpt-date',   d.date);
+  set('rpt-ref',    d.ref);
+
+  set('rpt-i01-act', fmt(d.contrib));     setHTML('rpt-i01-var', diff(d.contrib, 2840));
+  set('rpt-i02-act', fmt(d.mudaye));      setHTML('rpt-i02-var', diff(d.mudaye, 300));
+  set('rpt-i03-act', fmt(d.donations));   setHTML('rpt-i03-var', diff(d.donations, 500));
+  set('rpt-inc-total-act', fmt(totalInc)); setHTML('rpt-inc-total-var', diff(totalInc, 3640));
+
+  set('rpt-e01-act', fmt(d.expRent));
+  set('rpt-e02-act', fmt(d.expUtil));     setHTML('rpt-e02-var', diff(120, d.expUtil));
+  set('rpt-e03-act', fmt(d.expLit));      setHTML('rpt-e03-var', diff(80, d.expLit));
+  set('rpt-e04-act', fmt(d.expAlms));     setHTML('rpt-e04-var', diff(150, d.expAlms));
+  set('rpt-e05-act', fmt(d.expYouth));
+  set('rpt-e06-act', fmt(d.expTech));
+  set('rpt-exp-total-act', fmt(totalExp)); setHTML('rpt-exp-total-var', diff(1230, totalExp));
+
+  set('rpt-sum-inc',   fmt(totalInc));
+  set('rpt-sum-exp',   fmt(totalExp));
+  const netEl = document.getElementById('rpt-sum-net');
+  if(netEl){ netEl.textContent = (net>=0?'+':'') + fmt(net); netEl.style.color = net>=0?'var(--green)':'var(--red)'; }
+  set('rpt-sum-open',  fmt(d.opening));
+  set('rpt-sum-close', fmt(closing));
+
+  // Income bars
+  const barMax = Math.max(d.contrib, d.mudaye, d.donations, 1);
+  const pct = v => Math.round((v/barMax)*100) + '%';
+  const el_bc = document.getElementById('bar-contrib');
+  const el_bm = document.getElementById('bar-mudaye');
+  const el_bd = document.getElementById('bar-donation');
+  if(el_bc) el_bc.style.width = pct(d.contrib);
+  if(el_bm) el_bm.style.width = pct(d.mudaye);
+  if(el_bd) el_bd.style.width = pct(d.donations);
+  set('lbl-contrib',  fmt(d.contrib)  + ' (' + Math.round((d.contrib/totalInc)*100)  + '%)');
+  set('lbl-mudaye',   fmt(d.mudaye)   + ' (' + Math.round((d.mudaye/totalInc)*100)   + '%)');
+  set('lbl-donation', fmt(d.donations)+ ' (' + Math.round((d.donations/totalInc)*100)+ '%)');
+
+  showToast('Report generated for ' + d.title + ' 📊');
+}
+
+/* ══════════════════════════════
+   MINUTES — ቃለ ጉባዔ
+   ══════════════════════════════ */
+let minutesData = [
+  { id:1, date:'2025-02-23', title:'February General Assembly', type:'general', attendees:18, status:'approved', summary:'Reviewed 2025 budget, approved Fasika preparations, elected new youth coordinator.', files:['feb2025-minutes.pdf'] },
+  { id:2, date:'2025-01-12', title:'January Council Meeting', type:'council', attendees:9,  status:'approved', summary:'Discussed building repairs, reviewed December financial report, set contribution rate.', files:['jan2025-minutes.pdf'] },
+  { id:3, date:'2024-12-08', title:'December Council Meeting', type:'council', attendees:8,  status:'approved', summary:'Year-end financial review, planning for Genna celebrations, volunteer coordination.', files:['dec2024-minutes.pdf'] },
+  { id:4, date:'2024-11-17', title:'November Emergency Meeting', type:'emergency', attendees:12, status:'approved', summary:'Addressed urgent facility issue, temporary relocation plan discussed and approved.', files:['nov2024-emergency.pdf'] },
+  { id:5, date:'2024-10-06', title:'October General Assembly', type:'general', attendees:22, status:'approved', summary:'Annual elections, reviewed Q3 finances, approved youth program expansion.', files:['oct2024-minutes.pdf'] },
+  { id:6, date:'2025-03-15', title:'March Council Meeting — DRAFT', type:'council', attendees:10, status:'draft', summary:'Reviewed March financials, discussed Fasika service planning, approved website launch.', files:[] }
+];
+function renderMinutes(filter){
+  const tbody = document.getElementById('minutes-tbody');
+  if(!tbody) return;
+  let data = [...minutesData].reverse();
+  if(filter && filter !== 'all') data = data.filter(m=>m.type===filter || m.status===filter);
+  const typeColors = { general:'badge-blue', council:'badge-green', emergency:'badge-red' };
+  tbody.innerHTML = data.map(m => `
+    <tr>
+      <td class="mono">${m.date}</td>
+      <td><strong>${m.title}</strong></td>
+      <td><span class="badge ${typeColors[m.type]||'badge-grey'}">${m.type.charAt(0).toUpperCase()+m.type.slice(1)}</span></td>
+      <td class="mono">${m.attendees} present</td>
+      <td><span class="badge ${m.status==='approved'?'badge-green':'badge-yellow'}">${m.status==='approved'?'Approved ✓':'Draft'}</span></td>
+      <td>
+        <div class="action-btns">
+          <button class="btn-icon" onclick="showMinutesDetail(${m.id})">View</button>
+          ${m.files.length ? '<button class="btn-icon" onclick="showToast(\'Downloading PDF 📄\')">📄 PDF</button>' : ''}
+          ${m.status==='draft' ? '<button class="btn-icon approve" onclick="showToast(\'Minutes approved ✅\')">Approve</button>' : ''}
+        </div>
+      </td>
+    </tr>`).join('');
+}
+function showMinutesDetail(id){
+  const m = minutesData.find(x=>x.id===id);
+  if(!m) return;
+  const modal = document.getElementById('modal-minutes-detail');
+  document.getElementById('modal-minutes-title').textContent = m.title;
+  document.getElementById('modal-minutes-body').innerHTML = `
+    <div style="display:grid;grid-template-columns:1fr 1fr;gap:12px;margin-bottom:16px;">
+      <div><div style="font-family:var(--font-ui);font-size:0.62rem;letter-spacing:0.1em;text-transform:uppercase;color:#888;margin-bottom:3px;">Date</div><div>${m.date}</div></div>
+      <div><div style="font-family:var(--font-ui);font-size:0.62rem;letter-spacing:0.1em;text-transform:uppercase;color:#888;margin-bottom:3px;">Attendees</div><div>${m.attendees} members present</div></div>
+      <div><div style="font-family:var(--font-ui);font-size:0.62rem;letter-spacing:0.1em;text-transform:uppercase;color:#888;margin-bottom:3px;">Type</div><div>${m.type.charAt(0).toUpperCase()+m.type.slice(1)}</div></div>
+      <div><div style="font-family:var(--font-ui);font-size:0.62rem;letter-spacing:0.1em;text-transform:uppercase;color:#888;margin-bottom:3px;">Status</div><div>${m.status}</div></div>
+    </div>
+    <div style="font-family:var(--font-ui);font-size:0.62rem;letter-spacing:0.1em;text-transform:uppercase;color:#888;margin-bottom:6px;">Summary</div>
+    <p style="font-size:0.9rem;color:#444;line-height:1.7;font-style:italic;">${m.summary}</p>
+    ${m.files.length ? `<div style="margin-top:16px;padding:12px;background:var(--green-pale);border-radius:4px;display:flex;align-items:center;gap:10px;font-size:0.85rem;"><span>📄</span><span>${m.files[0]}</span><button class="btn-icon" onclick="showToast('Downloading PDF 📄')" style="margin-left:auto;">Download</button></div>` : '<div style="margin-top:12px;font-size:0.8rem;color:#aaa;font-style:italic;">No attached documents yet.</div>'}
+  `;
+  openModal('modal-minutes-detail');
+}
+function saveNewMinutes(){
+  const title = document.getElementById('min-title').value;
+  const date  = document.getElementById('min-date').value;
+  const type  = document.getElementById('min-type').value;
+  const att   = document.getElementById('min-attendees').value;
+  const summ  = document.getElementById('min-summary').value;
+  if(!title || !date){ showToast('Please fill in title and date','⚠️',true); return; }
+
+  const newEntry = { date, title, type, attendees:parseInt(att)||0, status:'draft', summary:summ, files:[], createdAt:firebase.firestore.FieldValue.serverTimestamp() };
+
+  /* ── Save to Firestore ── */
+  fbAdd('minutes', newEntry)
+    .then(docRef => {
+      minutesData.push({ ...newEntry, id: docRef.id, createdAt: new Date() });
+      renderMinutes();
+      closeModal('modal-add-minutes');
+      showToast('ቃለ ጉባዔ saved to database ✅');
+      document.getElementById('minutes-count').textContent = minutesData.length;
+    })
+    .catch(err => showToast('Save failed: '+err.message,'❌',true));
+}
+
+function approveMinutes(firestoreId){
+  fbUpdate('minutes', firestoreId, { status:'approved' })
+    .then(()=>{
+      showToast('Minutes approved ✅');
+      // update local copy
+      const m = minutesData.find(x=>x.id===firestoreId);
+      if(m){ m.status='approved'; renderMinutes(); }
+    })
+    .catch(err=>showToast('Error: '+err.message,'❌',true));
+}
+
+/* ══════════════════════════════
+   KEYBOARD SHORTCUT
+   ══════════════════════════════ */
+document.addEventListener('keydown', e=>{
+  if(e.key==='Enter' && document.getElementById('login-screen').style.display!=='none') doAdminLogin();
+});
+
+/* ══════════════════════════════
+   INIT
+   ══════════════════════════════ */
+window.addEventListener('load', ()=>{
+  renderMinutes();
+});
+
+
+/* ══════════════════════════════════════════════════════
+   FIRESTORE REAL-TIME LISTENERS
+   ══════════════════════════════════════════════════════ */
+
+/* ── Members: live listener ── */
+function listenToMembers(){
+  fbListen(FIREBASE_READY ? db.collection('members').orderBy('joinedAt','desc') : null, docs=>{ var snapshot={docs,size:docs.length};
+      const pending = snapshot.docs.filter(d=>!d.data().approved).length;
+      const badge = document.getElementById('badge-members');
+      if(badge){ badge.textContent=pending; badge.style.display=pending>0?'':'none'; }
+
+      // Refresh members table if on that page
+      if(document.getElementById('page-members').classList.contains('active')){
+        renderMembersFromFirestore(snapshot.docs);
+      }
+    }, err=>console.warn('Members listener:', err));
+}
+
+function renderMembersFromFirestore(docs){
+  const tbody = document.getElementById('members-tbody');
+  if(!tbody) return;
+  tbody.innerHTML = docs.map(doc=>{
+    const m = doc.data();
+    return `<tr>
+      <td>${m.displayName||'—'}</td>
+      <td>${m.email||'—'}</td>
+      <td>${m.phone||'—'}</td>
+      <td><span class="badge ${m.approved?'badge-green':'badge-yellow'}">${m.approved?'Approved':'Pending'}</span></td>
+      <td>
+        ${!m.approved ? `<button class="btn-icon approve" onclick="approveMember('${doc.id}','${m.displayName||m.email}')">Approve</button>` : ''}
+        <button class="btn-icon" onclick="showToast('${m.displayName||m.email} ✉️')">Email</button>
+      </td>
+    </tr>`;
+  }).join('');
+}
+
+function approveMember(uid, name){
+  fbUpdate('members', uid, { approved:true })
+    .then(()=> showToast(name+' approved ✅'))
+    .catch(err=> showToast('Error: '+err.message,'❌',true));
+}
+
+/* ── ቃለ ጉባዔ Minutes: live listener ── */
+function listenToMinutes(){
+  fbListen(FIREBASE_READY ? db.collection('minutes').orderBy('createdAt','desc') : null, docs=>{ var snapshot={docs,size:docs.length};
+      minutesData = snapshot.docs.map(doc=>({ ...doc.data(), id:doc.id }));
+      renderMinutes();
+      const el = document.getElementById('minutes-count');
+      if(el) el.textContent = minutesData.length;
+    }, err=>console.warn('Minutes listener:', err));
+}
+
+/* ── Prayer Requests: live listener ── */
+function listenToPrayerRequests(){
+  fbListen(FIREBASE_READY ? db.collection('prayer_requests').where('approved','==',false).orderBy('ts','desc').limit(20) : null, docs=>{ var snapshot={docs,size:docs.length};
+      const badge = document.getElementById('badge-prayer');
+      if(badge){ badge.textContent=snapshot.size; badge.style.display=snapshot.size>0?'':'none'; }
+      renderPrayerRequests(snapshot.docs);
+    }, err=>console.warn('Prayer listener:', err));
+}
+
+function renderPrayerRequests(docs){
+  const container = document.getElementById('prayer-requests-list');
+  if(!container) return;
+  if(docs.length===0){
+    container.innerHTML='<div style="text-align:center;padding:30px;color:#aaa;font-style:italic;">No pending prayer requests.</div>';
+    return;
+  }
+  container.innerHTML = docs.map(doc=>{
+    const p = doc.data();
+    const ts = p.ts ? new Date(p.ts.seconds*1000).toLocaleDateString() : '—';
+    return `<div class="card" style="margin-bottom:10px;">
+      <div style="display:flex;justify-content:space-between;align-items:flex-start;gap:12px;flex-wrap:wrap;">
+        <div>
+          <div style="font-family:var(--font-ui);font-size:0.7rem;color:var(--green);letter-spacing:0.08em;">${p.name||'Anonyme'} · ${ts}</div>
+          <p style="margin-top:6px;font-size:0.9rem;color:#444;line-height:1.7;">${p.text}</p>
+        </div>
+        <button class="btn-icon approve" onclick="approvePrayer('${doc.id}')">Approve</button>
+      </div>
+    </div>`;
+  }).join('');
+}
+
+function approvePrayer(id){
+  fbUpdate('prayer_requests', id, { approved:true })
+    .then(()=> showToast('Prayer request approved ✅'))
+    .catch(err=> showToast('Error: '+err.message,'❌',true));
+}
+
+/* ── Dashboard stats from Firestore ── */
+function loadDashboardStats(){
+  // Member count
+  if(FIREBASE_READY) db.collection('members').where('approved','==',true).get().then(s=>{ const el=document.getElementById('stat-members'); if(el) el.textContent=s.size; });
+  // Prayer requests
+  if(FIREBASE_READY) db.collection('prayer_requests').where('approved','==',false).get().then(s=>{ const el=document.getElementById('stat-prayers'); if(el) el.textContent=s.size; });
+}
+
+/* ── Auth state: restore admin session on reload ── */
+window.addEventListener('load', ()=>{
+  if(FIREBASE_READY) auth.onAuthStateChanged(user=>{
+    if(user){
+      fbGet('members', user.uid).then(doc=>{
+        if(doc.exists && (doc.data().role==='admin'||doc.data().role==='treasurer')){
+          enterAdminApp(doc.data().displayName||user.email.split('@')[0], doc.data().role);
+        }
+      }).catch(()=>{});
+    } else {
+      renderMinutes(); // still render from local data while logged out
+    }
+  });
+});
+
+</script>
+</body>
+</html>
