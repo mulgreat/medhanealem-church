@@ -1825,6 +1825,193 @@ startStreamListener(); // replaces setInterval — updates instantly when admin 
   }, msUntilMidnight);
 })();
 
+</script><!-- Firebase SDK -->
+<script type="module">
+  import { initializeApp } from 'https://www.gstatic.com/firebasejs/10.12.0/firebase-app.js';
+  import { getAuth, createUserWithEmailAndPassword, signInWithEmailAndPassword, signOut, onAuthStateChanged } from 'https://www.gstatic.com/firebasejs/10.12.0/firebase-auth.js';
+  import { getFirestore, collection, addDoc, getDocs, doc, updateDoc, query, orderBy, where, onSnapshot } from 'https://www.gstatic.com/firebasejs/10.12.0/firebase-firestore.js';
+  import { getStorage, ref, uploadBytes, getDownloadURL } from 'https://www.gstatic.com/firebasejs/10.12.0/firebase-storage.js';
+
+  // Your Firebase configuration
+  const firebaseConfig = {
+    apiKey: "AIzaSyA1p4L5PzSGIq4tTKMK7jUSd1kGJzYKjFk",
+    authDomain: "medhanealem-church-ab0b1.firebaseapp.com",
+    projectId: "medhanealem-church-ab0b1",
+    storageBucket: "medhanealem-church-ab0b1.appspot.com",
+    messagingSenderId: "1058250343740",
+    appId: "1:1058250343740:web:2951d9ac4fe7813a884a39"
+  };
+
+  // Initialize Firebase
+  const app = initializeApp(firebaseConfig);
+  const auth = getAuth(app);
+  const db = getFirestore(app);
+  const storage = getStorage(app);
+
+  // Make Firebase available globally
+  window.firebaseApp = app;
+  window.firebaseAuth = auth;
+  window.firebaseDb = db;
+  window.firebaseStorage = storage;
+  window.firebaseFunctions = {
+    createUserWithEmailAndPassword,
+    signInWithEmailAndPassword,
+    signOut,
+    onAuthStateChanged,
+    collection,
+    addDoc,
+    getDocs,
+    doc,
+    updateDoc,
+    query,
+    orderBy,
+    where,
+    onSnapshot,
+    ref,
+    uploadBytes,
+    getDownloadURL
+  };
+
+  console.log('✅ Firebase initialized successfully!');
+
+  // ============ PRAYER REQUEST SUBMISSION ============
+  window.submitPrayerRequest = async function(name, email, category, request, isUrgent = false) {
+    try {
+      const { collection, addDoc } = window.firebaseFunctions;
+      await addDoc(collection(db, 'prayerRequests'), {
+        name,
+        email,
+        category,
+        isUrgent,
+        request,
+        status: 'pending',
+        createdAt: new Date()
+      });
+      alert('🙏 ጸሎትዎ ተቀብሏል! (Prayer request submitted successfully)');
+      return { success: true };
+    } catch (error) {
+      console.error('Error submitting prayer:', error);
+      alert('Error submitting prayer request. Please try again.');
+      return { success: false, error };
+    }
+  };
+
+  // ============ CONTACT FORM SUBMISSION ============
+  window.submitContactForm = async function(name, email, subject, message) {
+    try {
+      const { collection, addDoc } = window.firebaseFunctions;
+      await addDoc(collection(db, 'contactMessages'), {
+        name,
+        email,
+        subject,
+        message,
+        status: 'unread',
+        createdAt: new Date()
+      });
+      alert('✅ Message sent successfully!');
+      return { success: true };
+    } catch (error) {
+      console.error('Error sending message:', error);
+      alert('Error sending message. Please try again.');
+      return { success: false, error };
+    }
+  };
+
+  // ============ DONATION SUBMISSION ============
+  window.submitDonation = async function(donorName, email, amount, purpose, method, transactionId = '') {
+    try {
+      const { collection, addDoc } = window.firebaseFunctions;
+      await addDoc(collection(db, 'donations'), {
+        donorName,
+        email,
+        amount: parseFloat(amount),
+        currency: 'CAD',
+        purpose,
+        method,
+        transactionId,
+        status: 'confirmed',
+        date: new Date()
+      });
+      alert('💰 Thank you for your generous donation!');
+      return { success: true };
+    } catch (error) {
+      console.error('Error submitting donation:', error);
+      alert('Error processing donation. Please try again.');
+      return { success: false, error };
+    }
+  };
+
+  // ============ LOAD PRAYER REQUESTS (Public) ============
+  window.loadPrayerRequests = async function() {
+    try {
+      const { collection, getDocs, query, orderBy, limit } = window.firebaseFunctions;
+      const q = query(collection(db, 'prayerRequests'), orderBy('createdAt', 'desc'), limit(20));
+      const snapshot = await getDocs(q);
+      const prayers = [];
+      snapshot.forEach(doc => {
+        prayers.push({ id: doc.id, ...doc.data() });
+      });
+      return prayers;
+    } catch (error) {
+      console.error('Error loading prayers:', error);
+      return [];
+    }
+  };
+
+  // ============ LOAD EVENTS (Public) ============
+  window.loadEvents = async function() {
+    try {
+      const { collection, getDocs, query, where } = window.firebaseFunctions;
+      const q = query(collection(db, 'events'), where('status', '==', 'published'));
+      const snapshot = await getDocs(q);
+      const events = [];
+      snapshot.forEach(doc => {
+        events.push({ id: doc.id, ...doc.data() });
+      });
+      return events;
+    } catch (error) {
+      console.error('Error loading events:', error);
+      return [];
+    }
+  };
+
+  // ============ LOAD SERMONS (Public) ============
+  window.loadSermons = async function() {
+    try {
+      const { collection, getDocs, query, where, orderBy } = window.firebaseFunctions;
+      const q = query(collection(db, 'sermons'), where('status', '==', 'published'), orderBy('dateRecorded', 'desc'));
+      const snapshot = await getDocs(q);
+      const sermons = [];
+      snapshot.forEach(doc => {
+        sermons.push({ id: doc.id, ...doc.data() });
+      });
+      return sermons;
+    } catch (error) {
+      console.error('Error loading sermons:', error);
+      return [];
+    }
+  };
+</script>
+
+<!-- Example: Connect to your existing prayer form -->
+<script>
+  // Add this to your existing form submit handler
+  document.addEventListener('DOMContentLoaded', function() {
+    const prayerForm = document.querySelector('#prayerRequestForm'); // Change selector to match your form ID
+    if (prayerForm) {
+      prayerForm.addEventListener('submit', async function(e) {
+        e.preventDefault();
+        const name = document.querySelector('#prayerName')?.value || '';
+        const email = document.querySelector('#prayerEmail')?.value || '';
+        const category = document.querySelector('#prayerCategory')?.value || 'other';
+        const request = document.querySelector('#prayerText')?.value || '';
+        const isUrgent = document.querySelector('#prayerUrgent')?.checked || false;
+        
+        await window.submitPrayerRequest(name, email, category, request, isUrgent);
+        prayerForm.reset();
+      });
+    }
+  });
 </script>
 </body>
 </html>
